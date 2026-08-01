@@ -10,6 +10,7 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
   PieChart, Pie, Cell, LineChart, Line
 } from 'recharts';
+import { getCompetencia, competenciaMonthStr, competenciaYearStr } from "@/lib/fatura";
 
 // Interfaces
 interface Category {
@@ -18,6 +19,9 @@ interface Category {
   icon: string;
   expense_type: string;
   budget?: number; // Apenas a coluna real do banco de dados
+  is_credit_card?: boolean | null;
+  closing_date?: number | null;
+  due_date?: number | null;
 }
 
 interface Transaction {
@@ -106,7 +110,7 @@ export default function DashboardPage() {
     // CONSULTA: Puxando as transações
     const { data: transData, error: transError } = await supabase
       .from("transactions")
-      .select(`id, amount, date, status, categories (id, name, icon, expense_type, budget)`)
+      .select(`id, amount, date, status, categories (id, name, icon, expense_type, budget, is_credit_card, closing_date, due_date)`)
       .eq("user_id", session.user.id);
 
     if (transError) {
@@ -137,9 +141,9 @@ export default function DashboardPage() {
   });
 
   const filteredTransactions = transactions.filter(tx => {
-    const [txYear, txMonth] = tx.date.split("-");
-    const matchesYear = selectedYear === "Todos os Anos" || txYear === selectedYear;
-    const matchesMonth = selectedMonth === "Todos os Meses" || txMonth === MONTH_MAP[selectedMonth];
+    const competencia = getCompetencia(tx.date, tx.categories);
+    const matchesYear = selectedYear === "Todos os Anos" || competenciaYearStr(competencia) === selectedYear;
+    const matchesMonth = selectedMonth === "Todos os Meses" || competenciaMonthStr(competencia) === MONTH_MAP[selectedMonth];
     return matchesYear && matchesMonth;
   });
 
@@ -164,7 +168,10 @@ export default function DashboardPage() {
       let m = String(d.getMonth() + 1).padStart(2, '0');
       
       let incSum = incomes.filter(inc => inc.date.startsWith(`${y}-${m}`)).reduce((acc, curr) => acc + Number(curr.amount), 0);
-      let expSum = transactions.filter(tx => tx.date.startsWith(`${y}-${m}`)).reduce((acc, curr) => acc + Number(curr.amount), 0);
+      let expSum = transactions.filter(tx => {
+        const c = getCompetencia(tx.date, tx.categories);
+        return c.year === y && competenciaMonthStr(c) === m;
+      }).reduce((acc, curr) => acc + Number(curr.amount), 0);
       data.push({ name: SHORT_MONTHS[d.getMonth()], receitas: incSum, despesas: expSum });
     }
     return data;
@@ -229,7 +236,10 @@ export default function DashboardPage() {
       let m = String(d.getMonth() + 1).padStart(2, '0');
       
       let sum = transactions
-        .filter(tx => tx.date.startsWith(`${y}-${m}`) && tx.categories?.name === selectedEvolutionCategory)
+        .filter(tx => {
+          const c = getCompetencia(tx.date, tx.categories);
+          return c.year === y && competenciaMonthStr(c) === m && tx.categories?.name === selectedEvolutionCategory;
+        })
         .reduce((acc, curr) => acc + Number(curr.amount), 0);
         
       data.push({ name: SHORT_MONTHS[d.getMonth()], valor: sum });
