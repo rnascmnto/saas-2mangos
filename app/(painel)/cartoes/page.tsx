@@ -796,7 +796,7 @@ export default function CartoesPage() {
                       </button>
                     </div>
 
-                    <div className="space-y-3">
+                    <div className="space-y-3 pb-4">
                       {importedTxs.map((tx) => (
                         <div key={tx.id} className="p-4 bg-neutral-50 dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-800/80 rounded-xl space-y-3">
                           
@@ -840,33 +840,42 @@ export default function CartoesPage() {
                         </div>
                       ))}
                     </div>
-
-                    <div className="mt-6 pt-4 border-t border-neutral-200 dark:border-neutral-800 flex justify-end">
-                      <button 
-                        onClick={handleSaveImport}
-                        disabled={isSaving}
-                        className="px-6 py-3 bg-purple-600 text-white rounded-xl font-semibold text-sm hover:bg-purple-700 transition-colors shadow-sm shadow-purple-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                      >
-                        {isSaving ? <Loader2 size={18} className="animate-spin" /> : <UploadCloud size={18} />}
-                        Salvar {importedTxs.length} transações
-                      </button>
-                    </div>
                   </div>
                 )}
               </div>
             )}
 
-            <div className="p-5 md:p-6 bg-neutral-50 dark:bg-[#111111] border-t border-neutral-200 dark:border-neutral-800 rounded-b-2xl shrink-0 flex items-center justify-between">
-              <span className="text-sm font-semibold text-neutral-500 uppercase tracking-wider">
-                {modalView === 'import' ? 'Total da Importação' : 'Total da Fatura'}
-              </span>
-              <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                {formatCurrency(
-                  modalView === 'import' 
-                    ? importedTxs.reduce((acc, tx) => acc + tx.amount, 0)
-                    : filteredTransactions.filter(tx => tx.category_id === selectedCard.id).reduce((acc, tx) => acc + tx.amount, 0)
+            {/* RODAPÉ FIXO */}
+            <div className="p-5 md:p-6 bg-neutral-50 dark:bg-[#111111] border-t border-neutral-200 dark:border-neutral-800 rounded-b-2xl shrink-0">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                
+                {/* Bloco do Total */}
+                <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-start">
+                  <span className="text-sm font-semibold text-neutral-500 uppercase tracking-wider">
+                    {modalView === 'import' ? 'Total da Importação' : 'Total da Fatura'}
+                  </span>
+                  <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                    {formatCurrency(
+                      modalView === 'import' 
+                        ? importedTxs.reduce((acc, tx) => acc + tx.amount, 0)
+                        : filteredTransactions.filter(tx => tx.category_id === selectedCard.id).reduce((acc, tx) => acc + tx.amount, 0)
+                    )}
+                  </span>
+                </div>
+
+                {/* Botão de Salvar Importação Fixo (Aparece apenas quando há transações importadas) */}
+                {modalView === 'import' && importedTxs.length > 0 && (
+                  <button 
+                    onClick={handleSaveImport}
+                    disabled={isSaving}
+                    className="w-full sm:w-auto px-6 py-3 bg-purple-600 text-white rounded-xl font-semibold text-sm hover:bg-purple-700 transition-colors shadow-sm shadow-purple-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  >
+                    {isSaving ? <Loader2 size={18} className="animate-spin" /> : <UploadCloud size={18} />}
+                    Salvar {importedTxs.length} transações
+                  </button>
                 )}
-              </span>
+                
+              </div>
             </div>
 
           </div>
