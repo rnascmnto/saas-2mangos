@@ -148,7 +148,7 @@ export default function DashboardLayout({
           </div>
 
           <nav className="flex-1 w-full flex flex-col items-center gap-4 pt-6">
-            <MenuItem href="/dashboard" icon={LayoutDashboard} label="Visão Geral" isActive={pathname === "/dashboard"} />
+            <MenuItem href="/dashboard" icon={LayoutDashboard} label="Dashboard" isActive={pathname === "/dashboard"} />
             
             <div className="w-8 h-px bg-neutral-200 dark:bg-neutral-800 my-2" />
             
