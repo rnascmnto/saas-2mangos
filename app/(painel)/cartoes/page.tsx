@@ -674,13 +674,6 @@ export default function CartoesPage() {
                     );
                   })()}
                 </div>
-
-                <div className="p-5 md:p-6 bg-neutral-50 dark:bg-[#111111] border-t border-neutral-200 dark:border-neutral-800 rounded-b-2xl shrink-0 flex items-center justify-between">
-                  <span className="text-sm font-semibold text-neutral-500 uppercase tracking-wider">Total da Fatura</span>
-                  <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                    {formatCurrency(filteredTransactions.filter(tx => tx.category_id === selectedCard.id).reduce((acc, tx) => acc + tx.amount, 0))}
-                  </span>
-                </div>
               </>
             )}
 
