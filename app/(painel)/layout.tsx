@@ -66,9 +66,7 @@ export default function DashboardLayout({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   
-  // ==========================================
-  // ESTADOS DA BARRA DE PESQUISA GLOBAL
-  // ==========================================
+  // Estados da busca global
   const searchContainerRef = useRef<HTMLDivElement>(null);
   const [globalSearch, setGlobalSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -83,7 +81,6 @@ export default function DashboardLayout({
     full_name: "",
   });
 
-  // Carregar Perfil
   useEffect(() => {
     setMounted(true);
     async function loadHeaderProfile() {
@@ -108,7 +105,6 @@ export default function DashboardLayout({
     loadHeaderProfile();
   }, []);
 
-  // Controlar o clique fora dos dropdowns (Perfil e Busca Global)
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -122,7 +118,6 @@ export default function DashboardLayout({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Lógica de Debounce (Atrasa a busca para não sobrecarregar o banco enquanto o usuário digita)
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(globalSearch);
@@ -130,7 +125,7 @@ export default function DashboardLayout({
     return () => clearTimeout(timer);
   }, [globalSearch]);
 
-  // Executar a busca no Supabase
+  // Executar a busca expandida e ORDENADA no Supabase
   useEffect(() => {
     if (debouncedSearch.trim().length < 2) {
       setSearchResults({ incomes: [], transactions: [] });
@@ -144,25 +139,42 @@ export default function DashboardLayout({
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) return;
 
-        // Busca Receitas
+        // 1. Busca Receitas (Ordenadas por data decrescente)
         const { data: incData } = await supabase
           .from("incomes")
           .select("*")
           .eq("user_id", session.user.id)
           .ilike("name", `%${debouncedSearch}%`)
+          .order("date", { ascending: false })
           .limit(3);
 
-        // Busca Lançamentos (Despesas) - Procurando pela descrição
-        const { data: transData } = await supabase
+        // 2. Busca em Lançamentos (Pela Descrição - para Cartões)
+        const { data: descData } = await supabase
           .from("transactions")
-          .select(`*, categories(name, icon)`)
+          .select(`*, categories(name, icon, is_credit_card)`)
           .eq("user_id", session.user.id)
           .ilike("description", `%${debouncedSearch}%`)
-          .limit(3);
+          .order("date", { ascending: false })
+          .limit(5);
+
+        // 3. Busca em Lançamentos (Pelo Nome da Categoria - para Despesas Normais)
+        const { data: catData } = await supabase
+          .from("transactions")
+          .select(`*, categories!inner(name, icon, is_credit_card)`)
+          .eq("user_id", session.user.id)
+          .ilike("categories.name", `%${debouncedSearch}%`)
+          .order("date", { ascending: false })
+          .limit(5);
+
+        // Junta os resultados das transações, remove duplicadas e ordena tudo por data antes de exibir
+        const allTransactions = [...(descData || []), ...(catData || [])];
+        const uniqueTransactions = Array.from(new Map(allTransactions.map(item => [item.id, item])).values())
+          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+          .slice(0, 5);
 
         setSearchResults({
           incomes: incData || [],
-          transactions: transData || []
+          transactions: uniqueTransactions
         });
       } catch (error) {
         console.error("Erro na busca:", error);
@@ -245,7 +257,7 @@ export default function DashboardLayout({
                       className="w-full pl-10 pr-10 py-2.5 bg-white dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-800 rounded-xl text-sm font-medium text-black dark:text-white placeholder:text-neutral-500 focus:outline-none focus:border-[#5C67FF] transition-colors shadow-sm"
                     />
                     
-                    {/* Spinner de carregamento dentro do input */}
+                    {/* Spinner de carregamento */}
                     {isSearching && (
                       <Loader2 size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#5C67FF] animate-spin" />
                     )}
@@ -283,35 +295,38 @@ export default function DashboardLayout({
                               </div>
                             )}
 
-                            {/* Separador se tiver os dois */}
                             {searchResults.incomes.length > 0 && searchResults.transactions.length > 0 && (
                               <div className="h-px w-full bg-neutral-100 dark:bg-neutral-800 my-1" />
                             )}
 
-                            {/* Grupo: Despesas/Lançamentos */}
+                            {/* Grupo: Lançamentos / Despesas Gerais */}
                             {searchResults.transactions.length > 0 && (
                               <div>
                                 <div className="px-4 py-2 text-[10px] font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1.5">
-                                  <TrendingDown size={12} className="text-red-500" /> Lançamentos
+                                  <TrendingDown size={12} className="text-red-500" /> Lançamentos e Despesas
                                 </div>
-                                {searchResults.transactions.map(tx => (
-                                  <Link 
-                                    key={`tx-${tx.id}`} 
-                                    href="/lancamentos"
-                                    onClick={() => setIsSearchOpen(false)}
-                                    className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors"
-                                  >
-                                    <div className="flex flex-col">
-                                      <span className="text-sm font-semibold text-black dark:text-white">
-                                        {tx.description || tx.categories?.name || "Despesa"}
-                                      </span>
-                                      <span className="text-xs text-neutral-500">
-                                        {tx.categories?.icon} {tx.categories?.name} • {formatDateBR(tx.date)}
-                                      </span>
-                                    </div>
-                                    <span className="text-sm font-bold text-black dark:text-white">-{formatCurrency(tx.amount)}</span>
-                                  </Link>
-                                ))}
+                                {searchResults.transactions.map(tx => {
+                                  // Se for cartão, a prioridade é exibir a descrição. Se não, exibe o nome da categoria
+                                  const title = tx.description || tx.categories?.name || "Despesa";
+                                  return (
+                                    <Link 
+                                      key={`tx-${tx.id}`} 
+                                      href="/lancamentos"
+                                      onClick={() => setIsSearchOpen(false)}
+                                      className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors"
+                                    >
+                                      <div className="flex flex-col">
+                                        <span className="text-sm font-semibold text-black dark:text-white">
+                                          {title}
+                                        </span>
+                                        <span className="text-xs text-neutral-500">
+                                          {tx.categories?.icon} {tx.categories?.name} • {formatDateBR(tx.date)}
+                                        </span>
+                                      </div>
+                                      <span className="text-sm font-bold text-black dark:text-white">-{formatCurrency(tx.amount)}</span>
+                                    </Link>
+                                  )
+                                })}
                               </div>
                             )}
                           </div>
@@ -372,7 +387,7 @@ export default function DashboardLayout({
             </div>
           </header>
 
-          <div className="flex-1 overflow-y-auto p-4 md:px-8 md:pt-10 md:pb-8 flex flex-col">
+          <div className="flex-1 overflow-y-auto p-4 md:px-8 md:pt-4 md:pb-8 flex flex-col">
             <div className="flex-1 w-full">
               {children}
             </div>

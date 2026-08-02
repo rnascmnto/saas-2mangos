@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { Plus, Loader2, X, Trash2, CreditCard, Repeat, Activity, Target, Edit3, HelpCircle } from "lucide-react";
+import { Plus, Loader2, X, Trash2, CreditCard, Repeat, Activity, Target, Edit3, HelpCircle, Tag } from "lucide-react";
 
 interface Category {
   id: string;
@@ -180,13 +180,16 @@ export default function CategoriasPage() {
   }
 
   return (
-    // Substituído max-w-6xl por w-full max-w-[1600px] para alinhar com a Dashboard
     <div className="w-full max-w-[1600px] mx-auto space-y-8 animate-in fade-in duration-500">
       
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-black dark:text-white tracking-tight">Categorias</h1>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1.5">
+          {/* TÍTULO E SUBTÍTULO CORRIGIDOS - Padrão do sistema */}
+          <h1 className="text-3xl font-bold text-black dark:text-white tracking-tight">
+            Categorias
+          </h1>
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1.5 flex items-center gap-2">
+            <Tag size={16} className="text-[#5C67FF]" />
             Organize suas despesas e metas de gastos.
           </p>
         </div>
@@ -218,13 +221,11 @@ export default function CategoriasPage() {
           </button>
         </div>
       ) : (
-        // Ajuste no grid: adicionado 2xl:grid-cols-4 e 2xl:gap-6 para aproveitar melhor telas grandes
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 2xl:gap-6">
           {categories.map((category) => (
             <div
               key={category.id}
-              // Adicionado hover idêntico ao da Dashboard (flutuar e sombra)
-              className="group relative flex flex-col p-5 bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-md hover:border-blue-500/50 dark:hover:border-blue-500/50"
+              className="group relative flex flex-col p-5 bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
@@ -319,7 +320,6 @@ export default function CategoriasPage() {
                 <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-500 mb-2">
                   Escolha um Ícone *
                 </label>
-                {/* Scroll adicionado para comportar a nova lista de ícones */}
                 <div className="grid grid-cols-8 gap-1.5 bg-neutral-50 dark:bg-neutral-900 p-3 rounded-xl border border-neutral-200 dark:border-neutral-800 max-h-48 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-neutral-200 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-700 [&::-webkit-scrollbar-thumb]:rounded-full">
                   {COMMON_EMOJIS.map((emoji) => (
                     <button

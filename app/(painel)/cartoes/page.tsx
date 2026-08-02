@@ -382,7 +382,8 @@ export default function CartoesPage() {
   const formatCurrency = (val: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
   const formatDateBR = (dateStr: string) => dateStr.split('-').reverse().join('/');
 
-  const cardHoverEffect = "transition-all duration-300 hover:-translate-y-1 hover:shadow-md hover:border-purple-500/50 dark:hover:border-purple-500/50 cursor-pointer";
+  // REMOVIDA A BORDA COLORIDA (border-purple-500) E MANTIDO APENAS O EFEITO DE SOMBRA/FLUTUAR
+  const cardHoverEffect = "transition-all duration-300 hover:-translate-y-1 hover:shadow-md cursor-pointer";
 
   const openCardModal = (card: Category) => {
     setSelectedCard(card);

@@ -406,7 +406,7 @@ export default function LancamentosPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         
         {/* Card 1: Total no Período */}
-        <div className="bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-2xl p-5 flex flex-col justify-between min-h-[140px] shadow-sm">
+        <div className="bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-2xl p-5 flex flex-col justify-between min-h-[140px] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
           <div className="flex items-start justify-between">
             <div className="space-y-1">
               <span className="text-[10px] font-bold tracking-widest text-neutral-500 uppercase">Total no período</span>
@@ -428,7 +428,7 @@ export default function LancamentosPage() {
         </div>
 
         {/* Card 2: Acumulado do Ano */}
-        <div className={`bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-2xl p-5 flex flex-col justify-between min-h-[140px] shadow-sm transition-all ${isTableFiltered ? 'opacity-40 grayscale' : ''}`}>
+        <div className={`bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-2xl p-5 flex flex-col justify-between min-h-[140px] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md ${isTableFiltered ? 'opacity-40 grayscale' : ''}`}>
           <div className="flex items-start justify-between">
             <div className="space-y-1">
               <span className="text-[10px] font-bold tracking-widest text-neutral-500 uppercase">Acumulado do ano</span>
@@ -448,7 +448,7 @@ export default function LancamentosPage() {
         </div>
 
         {/* Card 3: Média de Saídas */}
-        <div className="bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-2xl p-5 flex flex-col justify-between min-h-[140px] shadow-sm">
+        <div className="bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-2xl p-5 flex flex-col justify-between min-h-[140px] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
           <div className="flex items-start justify-between">
             <div className="space-y-1">
               <span className="text-[10px] font-bold tracking-widest text-neutral-500 uppercase">
@@ -472,7 +472,7 @@ export default function LancamentosPage() {
         </div>
 
         {/* Card 4: Análise Avançada */}
-        <div className="bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-2xl p-5 flex flex-col justify-between min-h-[140px] shadow-sm opacity-60">
+        <div className="bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-2xl p-5 flex flex-col justify-between min-h-[140px] shadow-sm opacity-60 transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
           <div className="flex items-start justify-between">
             <div className="space-y-1">
               <span className="text-[10px] font-bold tracking-widest text-neutral-500 uppercase">Análise avançada</span>
