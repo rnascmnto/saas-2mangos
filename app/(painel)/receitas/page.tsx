@@ -89,7 +89,7 @@ export default function ReceitasPage() {
       .from("incomes")
       .select("*")
       .eq("user_id", session.user.id)
-      // AGORA SIM: Ordem crescente (do dia 01 ao dia 31 cronologicamente)
+      // Ordem crescente (do dia 01 ao dia 31 cronologicamente)
       .order("date", { ascending: true })
       .order("created_at", { ascending: true }); 
 
@@ -196,7 +196,7 @@ export default function ReceitasPage() {
   const formatDateBR = (dateStr: string) => dateStr.split('-').reverse().join('/');
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500 pb-10">
+    <div className="w-full max-w-[1600px] mx-auto space-y-8 animate-in fade-in duration-500 pb-10">
       
       {/* CABEÇALHO E FILTROS MACRO */}
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
