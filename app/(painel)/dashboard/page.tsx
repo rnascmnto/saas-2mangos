@@ -18,7 +18,7 @@ interface Category {
   name: string;
   icon: string;
   expense_type: string;
-  budget?: number; // Apenas a coluna real do banco de dados
+  budget?: number; 
   is_credit_card?: boolean | null;
   closing_date?: number | null;
   due_date?: number | null;
@@ -53,12 +53,16 @@ const MONTH_MAP: { [key: string]: string } = {
 };
 
 const SHORT_MONTHS = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
-const YEARS = ["Todos os Anos", "2025", "2026", "2027", "2028", "2029", "2030"];
 
 export default function DashboardPage() {
+  // Inicialização dinâmica baseada na data atual do sistema
+  const currentDate = new Date();
+  const currentMonthName = MONTHS[currentDate.getMonth() + 1]; // Pula o "Todos os Meses"
+  const currentYearStr = currentDate.getFullYear().toString();
+
   // Filtros de Período
-  const [selectedMonth, setSelectedMonth] = useState("Julho");
-  const [selectedYear, setSelectedYear] = useState("2026");
+  const [selectedMonth, setSelectedMonth] = useState(currentMonthName);
+  const [selectedYear, setSelectedYear] = useState(currentYearStr);
   const [isMonthOpen, setIsMonthOpen] = useState(false);
   const [isYearOpen, setIsYearOpen] = useState(false);
   
@@ -103,7 +107,7 @@ export default function DashboardPage() {
 
     if (profileData) {
       const nameToUse = profileData.full_name || profileData.username || "Usuário";
-      const firstName = nameToUse.trim().split(" ")[0]; // Pega apenas o primeiro nome
+      const firstName = nameToUse.trim().split(" ")[0]; 
       setUserName(firstName);
     }
 
@@ -132,6 +136,17 @@ export default function DashboardPage() {
     setLoading(false);
   }
 
+  // --- LÓGICA DE ANOS DINÂMICOS CORRIGIDA ---
+  const incomeYears = incomes.filter(inc => inc.date).map(inc => inc.date.split("-")[0]);
+  const transactionYears = transactions.filter(tx => tx.date).map(tx => tx.date.split("-")[0]);
+  
+  const availableYears = Array.from(new Set([...incomeYears, ...transactionYears]));
+  if (!availableYears.includes(currentYearStr)) {
+    availableYears.push(currentYearStr);
+  }
+  availableYears.sort((a, b) => Number(b) - Number(a));
+  const dynamicYears = ["Todos os Anos", ...availableYears];
+
   // --- LÓGICA DE FILTRAGEM ---
   const filteredIncomes = incomes.filter(inc => {
     const [incYear, incMonth] = inc.date.split("-");
@@ -151,8 +166,53 @@ export default function DashboardPage() {
   const totalExpense = filteredTransactions.reduce((acc, tx) => acc + Number(tx.amount), 0);
   const balance = totalIncome - totalExpense;
 
-  const pendingTransactions = filteredTransactions.filter(tx => tx.status === "pendente");
-  const nextDueTransaction = pendingTransactions.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0];
+  // --- LÓGICA DO PRÓXIMO VENCIMENTO INTELIGENTE (LIMITADO AO PERÍODO SELECIONADO) ---
+  const getNextDueItem = () => {
+    // Utiliza as transações já filtradas pelo mês/ano selecionado no topo da Dashboard
+    const pendingInPeriod = filteredTransactions.filter(tx => tx.status === "pendente");
+
+    // 1. Mapeia despesas normais pendentes no período
+    const normalItems = pendingInPeriod
+      .filter(tx => !tx.categories?.is_credit_card)
+      .map(tx => ({
+        name: tx.categories?.name || "Despesa",
+        amount: Number(tx.amount),
+        date: tx.date
+      }));
+
+    // 2. Agrupa faturas de cartão de crédito pendentes por competência/cartão no período
+    const cardMap: Record<string, { name: string, amount: number, date: string }> = {};
+
+    pendingInPeriod
+      .filter(tx => tx.categories?.is_credit_card)
+      .forEach(tx => {
+        const comp = getCompetencia(tx.date, tx.categories);
+        const cardId = tx.categories.id;
+        const key = `${cardId}_${comp.year}_${comp.month}`;
+
+        if (!cardMap[key]) {
+          const dueDay = tx.categories.due_date ? String(tx.categories.due_date).padStart(2, '0') : "10";
+          const compMonthStr = String(comp.month + 1).padStart(2, '0');
+          const dueDateStr = `${comp.year}-${compMonthStr}-${dueDay}`;
+
+          cardMap[key] = {
+            name: `${tx.categories.name}`,
+            amount: 0,
+            date: dueDateStr
+          };
+        }
+        cardMap[key].amount += Number(tx.amount);
+      });
+
+    const cardItems = Object.values(cardMap);
+
+    // Junta tudo e ordena pela data mais próxima dentro do mês selecionado
+    const allUpcoming = [...normalItems, ...cardItems].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+    return allUpcoming[0] || null;
+  };
+
+  const nextDueItem = getNextDueItem();
 
   // --- LÓGICA GRÁFICO 1: FLUXO DE CAIXA (12 Meses) ---
   const getChartData = () => {
@@ -269,7 +329,6 @@ export default function DashboardPage() {
     return null;
   };
 
-  // Classe CSS compartilhada para o hover de todos os cards
   const cardHoverEffect = "transition-all duration-300 hover:-translate-y-1 hover:shadow-md hover:border-neutral-300 dark:hover:border-neutral-700";
 
   return (
@@ -315,7 +374,7 @@ export default function DashboardPage() {
               </button>
               {isYearOpen && (
                 <div className="absolute top-full right-0 mt-2 w-40 bg-white dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-xl z-50 py-2 animate-in fade-in slide-in-from-top-2">
-                  {YEARS.map((year) => (
+                  {dynamicYears.map((year) => (
                     <button key={year} onClick={() => { setSelectedYear(year); setIsYearOpen(false); }} className="w-full text-left px-4 py-2.5 text-sm transition-colors text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800">
                       {year}
                     </button>
@@ -379,13 +438,13 @@ export default function DashboardPage() {
                   <CalendarClock size={16} className="text-orange-500" />
                 </div>
               </div>
-              {nextDueTransaction ? (
+              {nextDueItem ? (
                 <div className="flex flex-col">
                   <h3 className="text-2xl font-bold text-black dark:text-white leading-none">
-                    {formatCurrency(nextDueTransaction.amount)}
+                    {formatCurrency(nextDueItem.amount)}
                   </h3>
                   <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400 mt-1.5 truncate">
-                    {nextDueTransaction.categories?.name}
+                    {nextDueItem.name}
                   </p>
                 </div>
               ) : (

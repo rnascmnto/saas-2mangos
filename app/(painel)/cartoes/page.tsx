@@ -53,8 +53,13 @@ const MONTH_MAP: { [key: string]: string } = {
 };
 
 export default function CartoesPage() {
-  const [selectedMonth, setSelectedMonth] = useState("Julho");
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
+  // Inicialização dinâmica baseada na data atual do sistema
+  const currentDate = new Date();
+  const currentMonthName = MONTHS[currentDate.getMonth() + 1]; // Pula o "Todos os Meses"
+  const currentYearStr = currentDate.getFullYear().toString();
+
+  const [selectedMonth, setSelectedMonth] = useState(currentMonthName);
+  const [selectedYear, setSelectedYear] = useState(currentYearStr);
   const [isMonthOpen, setIsMonthOpen] = useState(false);
   const [isYearOpen, setIsYearOpen] = useState(false);
   const monthRef = useRef<HTMLDivElement>(null);
@@ -80,9 +85,8 @@ export default function CartoesPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [importedTxs, setImportedTxs] = useState<ImportedTx[]>([]);
 
-  const currentYear = new Date().getFullYear().toString();
   const availableYears = Array.from(new Set(transactions.map(tx => tx.date.split("-")[0])));
-  if (!availableYears.includes(currentYear)) availableYears.push(currentYear);
+  if (!availableYears.includes(currentYearStr)) availableYears.push(currentYearStr);
   availableYears.sort((a, b) => Number(b) - Number(a));
   const dynamicYears = ["Todos os Anos", ...availableYears];
 
@@ -382,7 +386,6 @@ export default function CartoesPage() {
   const formatCurrency = (val: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
   const formatDateBR = (dateStr: string) => dateStr.split('-').reverse().join('/');
 
-  // REMOVIDA A BORDA COLORIDA (border-purple-500) E MANTIDO APENAS O EFEITO DE SOMBRA/FLUTUAR
   const cardHoverEffect = "transition-all duration-300 hover:-translate-y-1 hover:shadow-md cursor-pointer";
 
   const openCardModal = (card: Category) => {

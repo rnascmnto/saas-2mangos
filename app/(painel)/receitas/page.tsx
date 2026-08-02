@@ -29,12 +29,15 @@ const MONTH_MAP: { [key: string]: string } = {
   "Setembro": "09", "Outubro": "10", "Novembro": "11", "Dezembro": "12"
 };
 
-const YEARS = ["Todos os Anos", "2025", "2026", "2027", "2028", "2029", "2030"];
-
 export default function ReceitasPage() {
+  // Inicialização dinâmica baseada na data atual do sistema
+  const currentDate = new Date();
+  const currentMonthName = MONTHS[currentDate.getMonth() + 1]; // Pula o "Todos os Meses"
+  const currentYearStr = currentDate.getFullYear().toString();
+
   // Filtros de Período (Topo)
-  const [selectedMonth, setSelectedMonth] = useState("Julho");
-  const [selectedYear, setSelectedYear] = useState("2026");
+  const [selectedMonth, setSelectedMonth] = useState(currentMonthName);
+  const [selectedYear, setSelectedYear] = useState(currentYearStr);
   const [isMonthOpen, setIsMonthOpen] = useState(false);
   const [isYearOpen, setIsYearOpen] = useState(false);
   const monthRef = useRef<HTMLDivElement>(null);
@@ -166,6 +169,16 @@ export default function ReceitasPage() {
     }
   }
 
+  // --- LÓGICA DE ANOS DINÂMICOS ---
+  const currentYear = new Date().getFullYear().toString();
+  const availableYears = Array.from(new Set(incomes.map(inc => inc.date.split("-")[0])));
+  
+  if (!availableYears.includes(currentYear)) {
+    availableYears.push(currentYear);
+  }
+  availableYears.sort((a, b) => Number(b) - Number(a));
+  const dynamicYears = ["Todos os Anos", ...availableYears];
+
   // --- LÓGICA DE FILTRAGEM ---
   const isTableFiltered = tableSearch.trim() !== "";
 
@@ -233,14 +246,14 @@ export default function ReceitasPage() {
             
             <div className="w-px h-6 bg-neutral-200 dark:bg-neutral-800 mr-4" />
             
-            {/* Dropdown Ano */}
+            {/* Dropdown Ano Dinâmico */}
             <div className="relative" ref={yearRef}>
               <button onClick={() => { setIsYearOpen(!isYearOpen); setIsMonthOpen(false); }} className="flex items-center gap-2 text-black dark:text-white hover:opacity-80 transition-opacity min-w-[70px] justify-between">
                 {selectedYear} <ChevronDown size={14} className="text-neutral-500" />
               </button>
               {isYearOpen && (
                 <div className="absolute top-full right-0 mt-2 w-40 bg-white dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-xl z-50 py-2 animate-in fade-in slide-in-from-top-2">
-                  {YEARS.map((year) => (
+                  {dynamicYears.map((year) => (
                     <button key={year} onClick={() => { setSelectedYear(year); setIsYearOpen(false); }} className="w-full text-left px-4 py-2.5 text-sm transition-colors text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800">
                       {year}
                     </button>
