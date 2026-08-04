@@ -53,9 +53,8 @@ const MONTH_MAP: { [key: string]: string } = {
 };
 
 export default function CartoesPage() {
-  // Inicialização dinâmica baseada na data atual do sistema
   const currentDate = new Date();
-  const currentMonthName = MONTHS[currentDate.getMonth() + 1]; // Pula o "Todos os Meses"
+  const currentMonthName = MONTHS[currentDate.getMonth() + 1]; 
   const currentYearStr = currentDate.getFullYear().toString();
 
   const [selectedMonth, setSelectedMonth] = useState(currentMonthName);
@@ -126,7 +125,6 @@ export default function CartoesPage() {
     setLoading(false);
   }
 
-  // --- EXCLUSÃO EM LOTE ---
   const toggleTxSelection = (id: string) => {
     setSelectedTxsToDel(prev => prev.includes(id) ? prev.filter(txId => txId !== id) : [...prev, id]);
   };
@@ -156,7 +154,6 @@ export default function CartoesPage() {
     }
   };
 
-  // --- LANÇAMENTO MANUAL ---
   async function handleManualLaunch(e: React.FormEvent) {
     e.preventDefault();
     if (!selectedCard || !desc || !amount || !purchaseDate) return;
@@ -181,7 +178,7 @@ export default function CartoesPage() {
           user_id: session.user.id,
           category_id: selectedCard.id,
           amount: amountPerInstallment,
-          date: instDate.toISOString().split('T')[0], // DATA DA COMPRA LIMPA
+          date: instDate.toISOString().split('T')[0], 
           status: "pendente", 
           description: isInstallment ? `${desc.trim()} (${i}/${totalInstallments})` : desc.trim(),
           installment_current: i,
@@ -206,7 +203,6 @@ export default function CartoesPage() {
     }
   }
 
-  // --- IMPORTAÇÃO OFX (RESOLVIDO O BUG DO NUBANK) ---
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -267,7 +263,6 @@ export default function CartoesPage() {
         const month = firstTx.date.substring(4, 6);
         const day = firstTx.date.substring(6, 8);
         
-        // BUG CORRIGIDO: Nubank usa o mesmo FITID todos os meses. Adicionando a data garante unicidade.
         let uniqueId = `${fitid}_${year}${month}${day}`;
         while (usedIds.has(uniqueId)) {
           uniqueId += `-${Math.floor(Math.random() * 1000)}`;
@@ -276,9 +271,9 @@ export default function CartoesPage() {
         
         extracted.push({
           id: uniqueId,
-          description: firstTx.memo, // DESCRIÇÃO PURA
+          description: firstTx.memo, 
           amount: finalAmount, 
-          date: `${year}-${month}-${day}`, // DATA CORRETA DA COMPRA
+          date: `${year}-${month}-${day}`, 
           isInstallment: false,
           installmentsCount: "2"
         });
@@ -323,7 +318,7 @@ export default function CartoesPage() {
             user_id: session.user.id,
             category_id: selectedCard.id,
             amount: amountPerInstallment,
-            date: instDate.toISOString().split('T')[0], // DATA LIMPA
+            date: instDate.toISOString().split('T')[0], 
             status: "pendente",
             description: tx.isInstallment ? `${tx.description} (${i}/${totalInstallments})` : tx.description,
             installment_current: i,
@@ -347,7 +342,6 @@ export default function CartoesPage() {
     }
   };
 
-  // --- FILTRO INTELIGENTE DE COMPETÊNCIA DA FATURA ---
   const filteredTransactions = transactions.filter(tx => {
     if (tx.categories?.is_credit_card) {
       const closingDay = tx.categories.closing_date;
@@ -402,14 +396,14 @@ export default function CartoesPage() {
         <div>
           <h1 className="text-3xl font-bold text-black dark:text-white tracking-tight">Cartões de Crédito</h1>
           <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1.5 flex items-center gap-1.5">
-            <CreditCard size={16} className="text-purple-500" /> Acompanhe seus limites e faturas
+            <CreditCard size={16} className="text-blue-600 dark:text-blue-500" /> Acompanhe seus limites e faturas
           </p>
         </div>
 
         <div className="flex flex-col sm:flex-row items-center gap-4">
           <div className="flex items-center h-12 bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 shadow-sm text-sm font-medium w-full sm:w-auto relative">
             <div className="flex items-center gap-2 mr-4">
-              <Calendar size={16} className="text-purple-500 dark:text-purple-400" />
+              <Calendar size={16} className="text-blue-600 dark:text-blue-500" />
               <span className="text-xs uppercase tracking-wider text-neutral-500 font-semibold">Fatura de</span>
             </div>
             <div className="w-px h-6 bg-neutral-200 dark:bg-neutral-800 mr-4" />
@@ -451,7 +445,7 @@ export default function CartoesPage() {
 
       {loading ? (
         <div className="flex items-center justify-center h-40">
-          <Loader2 className="animate-spin text-purple-500" size={32} />
+          <Loader2 className="animate-spin text-blue-600 dark:text-blue-500" size={32} />
         </div>
       ) : creditCards.length === 0 ? (
         <div className="text-center py-20 bg-white dark:bg-[#151515] rounded-2xl border border-neutral-200 dark:border-neutral-800">
@@ -473,8 +467,8 @@ export default function CartoesPage() {
             const barWidth = Math.min(percentageUsed, 100);
             const availableLimit = limit - invoiceTotal;
 
-            const barColorClass = isOverLimit ? "bg-rose-500" : "bg-purple-500";
-            const textColorClass = isOverLimit ? "text-rose-500" : "text-purple-500";
+            const barColorClass = isOverLimit ? "bg-rose-500" : "bg-blue-600";
+            const textColorClass = isOverLimit ? "text-rose-500" : "text-blue-600 dark:text-blue-400";
 
             return (
               <div
@@ -484,7 +478,7 @@ export default function CartoesPage() {
               >
                 <div className="flex items-start justify-between mb-6">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 flex items-center justify-center bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 border border-purple-100 dark:border-purple-900/50 rounded-xl text-xl">
+                    <div className="w-12 h-12 flex items-center justify-center bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/50 rounded-xl text-xl">
                       {card.icon}
                     </div>
                     <div>
@@ -564,7 +558,7 @@ export default function CartoesPage() {
                     <ArrowLeft size={20} />
                   </button>
                 )}
-                <div className="w-10 h-10 flex items-center justify-center bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 border border-purple-100 dark:border-purple-900/50 rounded-xl text-lg">
+                <div className="w-10 h-10 flex items-center justify-center bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/50 rounded-xl text-lg">
                   {selectedCard.icon}
                 </div>
                 <div>
@@ -592,7 +586,7 @@ export default function CartoesPage() {
                 <div className="px-5 md:px-6 py-4 bg-neutral-50 dark:bg-[#1A1A1A] border-b border-neutral-100 dark:border-neutral-800 shrink-0 flex flex-col sm:flex-row gap-3">
                   <button 
                     onClick={() => setModalView("manual")}
-                    className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-purple-600 text-white rounded-xl text-sm font-semibold hover:bg-purple-700 transition-colors shadow-sm shadow-purple-500/20"
+                    className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition-colors shadow-sm shadow-blue-500/20"
                   >
                     <Plus size={16} /> Lançar Manualmente
                   </button>
@@ -628,7 +622,7 @@ export default function CartoesPage() {
                               type="checkbox" 
                               checked={selectedTxsToDel.length === cardTxs.length}
                               onChange={() => toggleSelectAll(allTxsIds)}
-                              className="w-4 h-4 rounded border-neutral-300 text-purple-600 focus:ring-purple-600 cursor-pointer"
+                              className="w-4 h-4 rounded border-neutral-300 text-blue-600 focus:ring-blue-600 cursor-pointer"
                             />
                             <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-500 group-hover:text-black dark:group-hover:text-white transition-colors">Selecionar Todos</span>
                           </label>
@@ -646,15 +640,15 @@ export default function CartoesPage() {
                         </div>
 
                         {cardTxs.map(tx => (
-                          <div key={tx.id} className={`flex items-center justify-between p-3.5 bg-neutral-50 dark:bg-[#1A1A1A] border rounded-xl transition-colors group ${selectedTxsToDel.includes(tx.id) ? 'border-purple-500 bg-purple-50/50 dark:bg-purple-900/10' : 'border-neutral-200 dark:border-neutral-800/80 hover:border-purple-300 dark:hover:border-purple-800'}`}>
+                          <div key={tx.id} className={`flex items-center justify-between p-3.5 bg-neutral-50 dark:bg-[#1A1A1A] border rounded-xl transition-colors group ${selectedTxsToDel.includes(tx.id) ? 'border-blue-500 bg-blue-50/50 dark:bg-blue-900/10' : 'border-neutral-200 dark:border-neutral-800/80 hover:border-blue-300 dark:hover:border-blue-800'}`}>
                             <div className="flex items-center gap-3">
                               <input 
                                 type="checkbox" 
                                 checked={selectedTxsToDel.includes(tx.id)}
                                 onChange={() => toggleTxSelection(tx.id)}
-                                className="w-4 h-4 rounded border-neutral-300 text-purple-600 focus:ring-purple-600 cursor-pointer"
+                                className="w-4 h-4 rounded border-neutral-300 text-blue-600 focus:ring-blue-600 cursor-pointer"
                               />
-                              <div className={`w-2 h-2 rounded-full ${selectedTxsToDel.includes(tx.id) ? 'bg-purple-600' : 'bg-purple-400'}`}></div>
+                              <div className={`w-2 h-2 rounded-full ${selectedTxsToDel.includes(tx.id) ? 'bg-blue-600' : 'bg-blue-400'}`}></div>
                               <div>
                                 <p className="text-sm font-semibold text-black dark:text-white truncate max-w-[150px] sm:max-w-[300px]">
                                   {tx.description || "Compra no Cartão"}
@@ -662,7 +656,7 @@ export default function CartoesPage() {
                                 <div className="flex items-center gap-2 mt-1">
                                   <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">{formatDateBR(tx.date)}</span>
                                   {tx.installment_total && tx.installment_total > 1 && (
-                                    <span className="px-1.5 py-0.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 text-[9px] font-bold rounded">
+                                    <span className="px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-[9px] font-bold rounded">
                                       {tx.installment_current}/{tx.installment_total}
                                     </span>
                                   )}
@@ -692,7 +686,7 @@ export default function CartoesPage() {
                     <input 
                       type="text" required placeholder="Ex: Mercado Livre, Uber, Amazon..." 
                       value={desc} onChange={(e) => setDesc(e.target.value)}
-                      className="w-full pl-11 pr-4 py-3.5 bg-neutral-50 dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-800 rounded-xl text-sm font-medium text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-shadow"
+                      className="w-full pl-11 pr-4 py-3.5 bg-neutral-50 dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-800 rounded-xl text-sm font-medium text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-shadow"
                     />
                   </div>
                 </div>
@@ -705,7 +699,7 @@ export default function CartoesPage() {
                       <input 
                         type="number" step="0.01" min="0.01" required placeholder="0,00" 
                         value={amount} onChange={(e) => setAmount(e.target.value)}
-                        className="w-full pl-11 pr-4 py-3.5 bg-neutral-50 dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-800 rounded-xl text-sm font-bold text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-shadow"
+                        className="w-full pl-11 pr-4 py-3.5 bg-neutral-50 dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-800 rounded-xl text-sm font-bold text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-shadow"
                       />
                     </div>
                   </div>
@@ -714,36 +708,36 @@ export default function CartoesPage() {
                     <input 
                       type="date" required 
                       value={purchaseDate} onChange={(e) => setPurchaseDate(e.target.value)}
-                      className="w-full px-4 py-3.5 bg-neutral-50 dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-800 rounded-xl text-sm font-medium text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-shadow [&::-webkit-calendar-picker-indicator]:dark:invert [&::-webkit-calendar-picker-indicator]:opacity-50"
+                      className="w-full px-4 py-3.5 bg-neutral-50 dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-800 rounded-xl text-sm font-medium text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-shadow [&::-webkit-calendar-picker-indicator]:dark:invert [&::-webkit-calendar-picker-indicator]:opacity-50"
                     />
                   </div>
                 </div>
 
-                <div className="p-4 bg-purple-50 dark:bg-purple-900/10 border border-purple-200 dark:border-purple-900/30 rounded-xl space-y-4">
+                <div className="p-4 bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-900/30 rounded-xl space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h4 className="text-sm font-semibold text-purple-700 dark:text-purple-400 flex items-center gap-2">
+                      <h4 className="text-sm font-semibold text-blue-700 dark:text-blue-400 flex items-center gap-2">
                         <SplitSquareHorizontal size={16} /> Compra Parcelada?
                       </h4>
-                      <p className="text-[11px] text-purple-600/70 dark:text-purple-400/70 mt-0.5">
+                      <p className="text-[11px] text-blue-600/70 dark:text-blue-400/70 mt-0.5">
                         O sistema dividirá o valor total nos meses seguintes.
                       </p>
                     </div>
-                    <button type="button" onClick={() => setIsInstallment(!isInstallment)} className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 dark:focus:ring-offset-[#151515] ${isInstallment ? "bg-purple-500" : "bg-neutral-300 dark:bg-neutral-700"}`}>
+                    <button type="button" onClick={() => setIsInstallment(!isInstallment)} className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-[#151515] ${isInstallment ? "bg-blue-600" : "bg-neutral-300 dark:bg-neutral-700"}`}>
                       <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${isInstallment ? "translate-x-6" : "translate-x-1"}`} />
                     </button>
                   </div>
 
                   {isInstallment && (
                     <div className="pt-2 animate-in fade-in slide-in-from-top-2">
-                      <label className="block text-xs font-semibold uppercase tracking-wider text-purple-700 dark:text-purple-400 mb-2">Quantas parcelas?</label>
+                      <label className="block text-xs font-semibold uppercase tracking-wider text-blue-700 dark:text-blue-400 mb-2">Quantas parcelas?</label>
                       <input 
                         type="number" min="2" max="72" required={isInstallment}
                         value={installmentsCount} onChange={(e) => setInstallmentsCount(e.target.value)}
-                        className="w-full px-4 py-3 bg-white dark:bg-[#1A1A1A] border border-purple-200 dark:border-purple-900/50 rounded-xl text-sm font-bold text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="w-full px-4 py-3 bg-white dark:bg-[#1A1A1A] border border-blue-200 dark:border-blue-900/50 rounded-xl text-sm font-bold text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                       {amount && (
-                        <p className="text-xs font-medium text-purple-600 dark:text-purple-400 mt-3 bg-purple-100 dark:bg-purple-900/30 p-2.5 rounded-lg border border-purple-200 dark:border-purple-900/50">
+                        <p className="text-xs font-medium text-blue-600 dark:text-blue-400 mt-3 bg-blue-100 dark:bg-blue-900/30 p-2.5 rounded-lg border border-blue-200 dark:border-blue-900/50">
                           Resumo: Serão lançadas <strong>{installmentsCount}</strong> parcelas de <strong>{formatCurrency(parseFloat(amount) / parseInt(installmentsCount || "1"))}</strong>.
                         </p>
                       )}
@@ -755,7 +749,7 @@ export default function CartoesPage() {
                   <button type="button" onClick={() => setModalView("list")} className="flex-1 py-3 px-4 bg-white dark:bg-[#222] border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 rounded-xl font-semibold text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors">
                     Cancelar
                   </button>
-                  <button type="submit" disabled={isSaving || !desc || !amount} className="flex-1 py-3 px-4 bg-purple-600 text-white rounded-xl font-semibold text-sm hover:bg-purple-700 transition-colors shadow-sm shadow-purple-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2">
+                  <button type="submit" disabled={isSaving || !desc || !amount} className="flex-1 py-3 px-4 bg-blue-600 text-white rounded-xl font-semibold text-sm hover:bg-blue-700 transition-colors shadow-sm shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2">
                     {isSaving ? <Loader2 size={18} className="animate-spin" /> : "Adicionar Compra"}
                   </button>
                 </div>
@@ -768,8 +762,8 @@ export default function CartoesPage() {
                 
                 {importedTxs.length === 0 ? (
                   <div className="flex-1 flex flex-col items-center justify-center min-h-[300px]">
-                    <div className="w-full max-w-sm border-2 border-dashed border-neutral-300 dark:border-neutral-700 hover:border-purple-500 dark:hover:border-purple-500 bg-neutral-50 dark:bg-[#1A1A1A] rounded-3xl p-10 text-center transition-colors cursor-pointer" onClick={() => fileInputRef.current?.click()}>
-                      <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <div className="w-full max-w-sm border-2 border-dashed border-neutral-300 dark:border-neutral-700 hover:border-blue-500 dark:hover:border-blue-500 bg-neutral-50 dark:bg-[#1A1A1A] rounded-3xl p-10 text-center transition-colors cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+                      <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto mb-4">
                         <FileText size={32} />
                       </div>
                       <h3 className="text-lg font-bold text-black dark:text-white mb-2">Selecione o arquivo .OFX</h3>
@@ -783,7 +777,7 @@ export default function CartoesPage() {
                         onChange={handleFileUpload} 
                       />
                       
-                      <button className="mt-6 px-6 py-2.5 bg-purple-600 text-white rounded-xl text-sm font-semibold hover:bg-purple-700 transition-colors shadow-sm">
+                      <button className="mt-6 px-6 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition-colors shadow-sm">
                         Buscar Arquivo
                       </button>
                     </div>
@@ -807,17 +801,17 @@ export default function CartoesPage() {
                           <div className="flex flex-col sm:flex-row gap-3">
                             <div className="w-full sm:w-32 shrink-0">
                               <label className="block text-[10px] font-bold uppercase text-neutral-500 mb-1">Data</label>
-                              <input type="date" value={tx.date} onChange={(e) => updateImportedTx(tx.id, "date", e.target.value)} className="w-full px-3 py-2 bg-white dark:bg-[#222] border border-neutral-200 dark:border-neutral-700 rounded-lg text-xs font-medium focus:border-purple-500 focus:outline-none [&::-webkit-calendar-picker-indicator]:dark:invert" />
+                              <input type="date" value={tx.date} onChange={(e) => updateImportedTx(tx.id, "date", e.target.value)} className="w-full px-3 py-2 bg-white dark:bg-[#222] border border-neutral-200 dark:border-neutral-700 rounded-lg text-xs font-medium focus:border-blue-500 focus:outline-none [&::-webkit-calendar-picker-indicator]:dark:invert" />
                             </div>
                             
                             <div className="flex-1">
                               <label className="block text-[10px] font-bold uppercase text-neutral-500 mb-1">Descrição</label>
-                              <input type="text" value={tx.description} onChange={(e) => updateImportedTx(tx.id, "description", e.target.value)} className="w-full px-3 py-2 bg-white dark:bg-[#222] border border-neutral-200 dark:border-neutral-700 rounded-lg text-xs font-medium focus:border-purple-500 focus:outline-none" />
+                              <input type="text" value={tx.description} onChange={(e) => updateImportedTx(tx.id, "description", e.target.value)} className="w-full px-3 py-2 bg-white dark:bg-[#222] border border-neutral-200 dark:border-neutral-700 rounded-lg text-xs font-medium focus:border-blue-500 focus:outline-none" />
                             </div>
 
                             <div className="w-full sm:w-28 shrink-0">
                               <label className="block text-[10px] font-bold uppercase text-neutral-500 mb-1">Valor (R$)</label>
-                              <input type="number" step="0.01" value={tx.amount} onChange={(e) => updateImportedTx(tx.id, "amount", parseFloat(e.target.value) || 0)} className="w-full px-3 py-2 bg-white dark:bg-[#222] border border-neutral-200 dark:border-neutral-700 rounded-lg text-xs font-bold text-purple-600 dark:text-purple-400 focus:border-purple-500 focus:outline-none" />
+                              <input type="number" step="0.01" value={tx.amount} onChange={(e) => updateImportedTx(tx.id, "amount", parseFloat(e.target.value) || 0)} className="w-full px-3 py-2 bg-white dark:bg-[#222] border border-neutral-200 dark:border-neutral-700 rounded-lg text-xs font-bold text-blue-600 dark:text-blue-400 focus:border-blue-500 focus:outline-none" />
                             </div>
 
                             <div className="flex items-end pb-[2px]">
@@ -829,14 +823,14 @@ export default function CartoesPage() {
 
                           <div className="flex items-center gap-3 pt-2 border-t border-neutral-200 dark:border-neutral-800">
                             <label className="flex items-center gap-2 cursor-pointer">
-                              <input type="checkbox" checked={tx.isInstallment} onChange={(e) => updateImportedTx(tx.id, "isInstallment", e.target.checked)} className="w-3.5 h-3.5 rounded border-neutral-300 text-purple-600 focus:ring-purple-600" />
+                              <input type="checkbox" checked={tx.isInstallment} onChange={(e) => updateImportedTx(tx.id, "isInstallment", e.target.checked)} className="w-3.5 h-3.5 rounded border-neutral-300 text-blue-600 focus:ring-blue-600" />
                               <span className="text-[11px] font-semibold text-neutral-600 dark:text-neutral-400">Foi parcelado?</span>
                             </label>
                             
                             {tx.isInstallment && (
                               <div className="flex items-center gap-2 animate-in fade-in slide-in-from-left-2">
                                 <span className="text-[11px] text-neutral-500">Qtd:</span>
-                                <input type="number" min="2" max="72" value={tx.installmentsCount} onChange={(e) => updateImportedTx(tx.id, "installmentsCount", e.target.value)} className="w-16 px-2 py-1 bg-white dark:bg-[#222] border border-neutral-200 dark:border-neutral-700 rounded-md text-xs font-medium focus:border-purple-500 focus:outline-none" />
+                                <input type="number" min="2" max="72" value={tx.installmentsCount} onChange={(e) => updateImportedTx(tx.id, "installmentsCount", e.target.value)} className="w-16 px-2 py-1 bg-white dark:bg-[#222] border border-neutral-200 dark:border-neutral-700 rounded-md text-xs font-medium focus:border-blue-500 focus:outline-none" />
                               </div>
                             )}
                           </div>
@@ -858,7 +852,7 @@ export default function CartoesPage() {
                   <span className="text-sm font-semibold text-neutral-500 uppercase tracking-wider">
                     {modalView === 'import' ? 'Total da Importação' : 'Total da Fatura'}
                   </span>
-                  <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                  <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                     {formatCurrency(
                       modalView === 'import' 
                         ? importedTxs.reduce((acc, tx) => acc + tx.amount, 0)
@@ -872,7 +866,7 @@ export default function CartoesPage() {
                   <button 
                     onClick={handleSaveImport}
                     disabled={isSaving}
-                    className="w-full sm:w-auto px-6 py-3 bg-purple-600 text-white rounded-xl font-semibold text-sm hover:bg-purple-700 transition-colors shadow-sm shadow-purple-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold text-sm hover:bg-blue-700 transition-colors shadow-sm shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {isSaving ? <Loader2 size={18} className="animate-spin" /> : <UploadCloud size={18} />}
                     Salvar {importedTxs.length} transações

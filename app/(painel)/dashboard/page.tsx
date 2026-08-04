@@ -242,7 +242,7 @@ export default function DashboardPage() {
   const fixedExpenses = filteredTransactions.filter(tx => tx.categories?.expense_type === "recorrente").reduce((acc, curr) => acc + Number(curr.amount), 0);
   const variableExpenses = filteredTransactions.filter(tx => tx.categories?.expense_type === "variavel").reduce((acc, curr) => acc + Number(curr.amount), 0);
   const pieData = [
-    { name: "Fixo", value: fixedExpenses, color: "#6366F1" }, 
+    { name: "Fixo", value: fixedExpenses, color: "#2563EB" }, // Hex do blue-600 
     { name: "Variável", value: variableExpenses, color: "#F43F5E" } 
   ];
 
@@ -329,7 +329,8 @@ export default function DashboardPage() {
     return null;
   };
 
-  const cardHoverEffect = "transition-all duration-300 hover:-translate-y-1 hover:shadow-md hover:border-neutral-300 dark:hover:border-neutral-700";
+  // Efeito de hover atualizado para sem bordas: usa sombra e leve alteração de cor no dark mode
+  const cardHoverEffect = "transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:hover:bg-[#202020]";
 
   return (
     <div className="w-full max-w-[1600px] mx-auto space-y-8 animate-in fade-in duration-500 pb-12">
@@ -344,7 +345,7 @@ export default function DashboardPage() {
         </div>
 
         <div className="flex flex-col sm:flex-row items-center gap-4">
-          <div className="flex items-center h-12 bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 shadow-sm text-sm font-medium w-full sm:w-auto relative">
+          <div className="flex items-center h-12 bg-white dark:bg-[#1A1A1A] rounded-xl px-4 shadow-sm text-sm font-medium w-full sm:w-auto relative">
             <div className="flex items-center gap-2 mr-4">
               <Calendar size={16} className="text-blue-500 dark:text-blue-400" />
               <span className="text-xs uppercase tracking-wider text-neutral-500 font-semibold">Período</span>
@@ -394,11 +395,11 @@ export default function DashboardPage() {
         <>
           {/* LINHA 1: 4 CARDS RESUMO */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className={`bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 shadow-sm relative overflow-hidden flex flex-col justify-center gap-3 ${cardHoverEffect}`}>
+            <div className={`bg-white dark:bg-[#1A1A1A] rounded-2xl p-6 shadow-sm relative overflow-hidden flex flex-col justify-center gap-3 ${cardHoverEffect}`}>
               <div className={`absolute top-0 left-0 w-full h-1 ${balance >= 0 ? "bg-emerald-500" : "bg-red-500"}`} />
               <div className="flex items-start justify-between w-full">
                 <span className="text-[10px] font-bold tracking-widest text-neutral-500 uppercase mt-1">Saldo do mês</span>
-                <div className="p-2 bg-neutral-100 dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800">
+                <div className="p-2 bg-neutral-100 dark:bg-neutral-800/50 rounded-lg">
                   <Wallet size={16} className="text-neutral-500" />
                 </div>
               </div>
@@ -407,10 +408,10 @@ export default function DashboardPage() {
               </h3>
             </div>
 
-            <div className={`bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 shadow-sm flex flex-col justify-center gap-3 ${cardHoverEffect}`}>
+            <div className={`bg-white dark:bg-[#1A1A1A] rounded-2xl p-6 shadow-sm flex flex-col justify-center gap-3 ${cardHoverEffect}`}>
               <div className="flex items-start justify-between w-full">
                 <span className="text-[10px] font-bold tracking-widest text-neutral-500 uppercase mt-1">Total Receitas</span>
-                <div className="p-2 bg-emerald-50 dark:bg-emerald-950/30 rounded-lg border border-emerald-100 dark:border-emerald-900/50">
+                <div className="p-2 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg">
                   <TrendingUp size={16} className="text-emerald-500" />
                 </div>
               </div>
@@ -419,10 +420,10 @@ export default function DashboardPage() {
               </h3>
             </div>
 
-            <div className={`bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 shadow-sm flex flex-col justify-center gap-3 ${cardHoverEffect}`}>
+            <div className={`bg-white dark:bg-[#1A1A1A] rounded-2xl p-6 shadow-sm flex flex-col justify-center gap-3 ${cardHoverEffect}`}>
               <div className="flex items-start justify-between w-full">
                 <span className="text-[10px] font-bold tracking-widest text-neutral-500 uppercase mt-1">Total Despesas</span>
-                <div className="p-2 bg-red-50 dark:bg-red-950/30 rounded-lg border border-red-100 dark:border-red-900/50">
+                <div className="p-2 bg-red-50 dark:bg-red-900/20 rounded-lg">
                   <TrendingDown size={16} className="text-red-500" />
                 </div>
               </div>
@@ -431,10 +432,10 @@ export default function DashboardPage() {
               </h3>
             </div>
 
-            <div className={`bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 shadow-sm flex flex-col justify-center gap-3 ${cardHoverEffect}`}>
+            <div className={`bg-white dark:bg-[#1A1A1A] rounded-2xl p-6 shadow-sm flex flex-col justify-center gap-3 ${cardHoverEffect}`}>
               <div className="flex items-start justify-between w-full">
                 <span className="text-[10px] font-bold tracking-widest text-neutral-500 uppercase mt-1">Próximo Vencimento</span>
-                <div className="p-2 bg-orange-50 dark:bg-orange-950/30 rounded-lg border border-orange-100 dark:border-orange-900/50">
+                <div className="p-2 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
                   <CalendarClock size={16} className="text-orange-500" />
                 </div>
               </div>
@@ -458,16 +459,16 @@ export default function DashboardPage() {
           {/* LINHA 2: GRÁFICOS PRINCIPAIS */}
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-8">
             {/* Fluxo de Caixa */}
-            <div className={`lg:col-span-2 bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 shadow-sm flex flex-col ${cardHoverEffect}`}>
+            <div className={`lg:col-span-2 bg-white dark:bg-[#1A1A1A] rounded-2xl p-6 shadow-sm flex flex-col ${cardHoverEffect}`}>
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
                 <div>
                   <h2 className="text-lg font-bold text-black dark:text-white">Fluxo de Caixa Mensal</h2>
                   <p className="text-sm text-neutral-500 dark:text-neutral-400">Entradas vs Saídas</p>
                 </div>
-                <div className="flex items-center p-1 bg-neutral-100 dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-800 rounded-lg">
-                  <button onClick={() => setChartView("tudo")} className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-colors ${chartView === "tudo" ? "bg-white dark:bg-neutral-800 text-black dark:text-white shadow-sm" : "text-neutral-500 hover:text-black dark:hover:text-white"}`}>Tudo</button>
-                  <button onClick={() => setChartView("receitas")} className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-colors ${chartView === "receitas" ? "bg-white dark:bg-neutral-800 text-emerald-600 dark:text-emerald-400 shadow-sm" : "text-neutral-500 hover:text-black dark:hover:text-white"}`}>Receitas</button>
-                  <button onClick={() => setChartView("despesas")} className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-colors ${chartView === "despesas" ? "bg-white dark:bg-neutral-800 text-red-600 dark:text-red-400 shadow-sm" : "text-neutral-500 hover:text-black dark:hover:text-white"}`}>Despesas</button>
+                <div className="flex items-center p-1 bg-neutral-100 dark:bg-[#222222] rounded-lg">
+                  <button onClick={() => setChartView("tudo")} className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-colors ${chartView === "tudo" ? "bg-white dark:bg-neutral-700 text-black dark:text-white shadow-sm" : "text-neutral-500 hover:text-black dark:hover:text-white"}`}>Tudo</button>
+                  <button onClick={() => setChartView("receitas")} className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-colors ${chartView === "receitas" ? "bg-white dark:bg-neutral-700 text-emerald-600 dark:text-emerald-400 shadow-sm" : "text-neutral-500 hover:text-black dark:hover:text-white"}`}>Receitas</button>
+                  <button onClick={() => setChartView("despesas")} className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-colors ${chartView === "despesas" ? "bg-white dark:bg-neutral-700 text-red-600 dark:text-red-400 shadow-sm" : "text-neutral-500 hover:text-black dark:hover:text-white"}`}>Despesas</button>
                 </div>
               </div>
               <div className="h-[220px] 2xl:h-[280px] w-full mt-2 transition-all">
@@ -495,7 +496,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Perfil do Mês */}
-            <div className={`lg:col-span-1 bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 shadow-sm flex flex-col justify-between ${cardHoverEffect}`}>
+            <div className={`lg:col-span-1 bg-white dark:bg-[#1A1A1A] rounded-2xl p-6 shadow-sm flex flex-col justify-between ${cardHoverEffect}`}>
               <div>
                 <h2 className="text-lg font-bold text-black dark:text-white">Perfil do Mês</h2>
                 <p className="text-sm text-neutral-500 dark:text-neutral-400">Recorrentes vs Variáveis</p>
@@ -524,7 +525,7 @@ export default function DashboardPage() {
               </div>
               <div className="space-y-2 mt-4 2xl:mt-6">
                 {pieData.map((item) => (
-                  <div key={item.name} className="flex items-center justify-between p-2.5 bg-neutral-50 dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-800 rounded-xl">
+                  <div key={item.name} className="flex items-center justify-between p-2.5 bg-neutral-50 dark:bg-[#222222] rounded-xl">
                     <div className="flex items-center gap-2">
                       <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }} />
                       <span className="text-[11px] font-bold text-black dark:text-white uppercase tracking-wider">{item.name}</span>
@@ -536,7 +537,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Origem Receitas */}
-            <div className={`lg:col-span-1 bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 shadow-sm flex flex-col ${cardHoverEffect}`}>
+            <div className={`lg:col-span-1 bg-white dark:bg-[#1A1A1A] rounded-2xl p-6 shadow-sm flex flex-col ${cardHoverEffect}`}>
               <div>
                 <h2 className="text-lg font-bold text-black dark:text-white">Origem Receitas</h2>
                 <p className="text-sm text-neutral-500 dark:text-neutral-400">Principais entradas</p>
@@ -544,7 +545,7 @@ export default function DashboardPage() {
               {sortedIncomeSources.length > 0 ? (
                 <div className="mt-6 2xl:mt-8 space-y-2.5 flex-1 overflow-y-auto pr-1">
                   {sortedIncomeSources.slice(0, 5).map((source, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-800 rounded-xl">
+                    <div key={index} className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-[#222222] rounded-xl">
                       <span className="text-xs font-bold text-black dark:text-white truncate pr-2">{source.name}</span>
                       <span className="text-xs font-bold text-emerald-600 dark:text-emerald-500 whitespace-nowrap">{formatCurrency(source.amount)}</span>
                     </div>
@@ -563,13 +564,13 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-8">
             
             {/* Top Categorias */}
-            <div className={`lg:col-span-1 bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 shadow-sm flex flex-col ${cardHoverEffect}`}>
+            <div className={`lg:col-span-1 bg-white dark:bg-[#1A1A1A] rounded-2xl p-6 shadow-sm flex flex-col ${cardHoverEffect}`}>
               <div className="flex items-start justify-between mb-6">
                 <div>
                   <h2 className="text-lg font-bold text-black dark:text-white">Top Categorias</h2>
                   <p className="text-sm text-neutral-500 dark:text-neutral-400">Onde gastou mais</p>
                 </div>
-                <div className="p-1.5 bg-red-50 dark:bg-red-950/30 rounded-lg border border-red-100 dark:border-red-900/50">
+                <div className="p-1.5 bg-red-50 dark:bg-red-900/20 rounded-lg">
                   <TrendingDown size={14} className="text-red-500" />
                 </div>
               </div>
@@ -584,9 +585,9 @@ export default function DashboardPage() {
                           <span className="text-black dark:text-white truncate pr-2">{cat.name}</span>
                           <span className="text-neutral-900 dark:text-white whitespace-nowrap">{formatCurrency(cat.amount)}</span>
                         </div>
-                        <div className="w-full h-1.5 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
+                        <div className="w-full h-1.5 bg-neutral-100 dark:bg-[#2A2A2A] rounded-full overflow-hidden">
                           <div 
-                            className="h-full bg-[#6366F1] rounded-full transition-all duration-1000"
+                            className="h-full bg-blue-600 rounded-full transition-all duration-1000"
                             style={{ width: `${percentage}%` }}
                           />
                         </div>
@@ -602,13 +603,13 @@ export default function DashboardPage() {
             </div>
 
             {/* Metas do Mês */}
-            <div className={`lg:col-span-1 bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 shadow-sm flex flex-col ${cardHoverEffect}`}>
+            <div className={`lg:col-span-1 bg-white dark:bg-[#1A1A1A] rounded-2xl p-6 shadow-sm flex flex-col ${cardHoverEffect}`}>
               <div className="flex items-start justify-between mb-6">
                 <div>
                   <h2 className="text-lg font-bold text-black dark:text-white">Metas do Mês</h2>
                   <p className="text-sm text-neutral-500 dark:text-neutral-400">Orçamento vs Realizado</p>
                 </div>
-                <div className="p-1.5 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-100 dark:border-blue-900/50">
+                <div className="p-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                   <Target size={14} className="text-blue-500" />
                 </div>
               </div>
@@ -637,7 +638,7 @@ export default function DashboardPage() {
                               {formatCurrency(cat.amount)}
                             </span>
                             
-                            <div className="absolute right-0 bottom-full mb-2 hidden group-hover:block w-max bg-[#1A1A1A] text-neutral-300 text-[10px] font-semibold py-1.5 px-3 rounded-lg shadow-xl z-10 border border-neutral-800 animate-in fade-in zoom-in-95 pointer-events-none">
+                            <div className="absolute right-0 bottom-full mb-2 hidden group-hover:block w-max bg-[#222222] text-neutral-300 text-[10px] font-semibold py-1.5 px-3 rounded-lg shadow-xl z-10 border border-neutral-800 animate-in fade-in zoom-in-95 pointer-events-none">
                               Meta de gasto: <span className="text-white">{formatCurrency(cat.goal)}</span>
                             </div>
                           </div>
@@ -661,7 +662,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Evolução de Contas */}
-            <div className={`lg:col-span-2 bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 shadow-sm flex flex-col ${cardHoverEffect}`}>
+            <div className={`lg:col-span-2 bg-white dark:bg-[#1A1A1A] rounded-2xl p-6 shadow-sm flex flex-col ${cardHoverEffect}`}>
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
                 <div>
                   <h2 className="text-lg font-bold text-black dark:text-white">Evolução de Contas</h2>
@@ -673,7 +674,7 @@ export default function DashboardPage() {
                     <select 
                       value={selectedEvolutionCategory}
                       onChange={(e) => setSelectedEvolutionCategory(e.target.value)}
-                      className="appearance-none bg-neutral-100 dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-800 text-black dark:text-white text-xs font-semibold rounded-lg px-4 py-2 pr-8 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors cursor-pointer"
+                      className="appearance-none bg-neutral-100 dark:bg-[#222222] text-black dark:text-white text-xs font-semibold rounded-lg px-4 py-2 pr-8 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors cursor-pointer border-none"
                     >
                       {allCategoryNames.map(name => (
                         <option key={name} value={name}>{name}</option>
@@ -692,7 +693,7 @@ export default function DashboardPage() {
                       <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#737373', fontSize: 12 }} dy={10} />
                       <YAxis axisLine={false} tickLine={false} tick={{ fill: '#737373', fontSize: 12 }} tickFormatter={(value) => value >= 1000 ? `${(value / 1000).toFixed(1)}k` : value} />
                       <RechartsTooltip content={<CustomTooltip />} cursor={{ stroke: '#333', strokeWidth: 1, strokeDasharray: '4 4' }} />
-                      <Line type="monotone" dataKey="valor" name={selectedEvolutionCategory} stroke="#6366F1" strokeWidth={3} dot={{ r: 4, fill: "#6366F1", stroke: "#151515", strokeWidth: 2 }} activeDot={{ r: 6, fill: "#6366F1", stroke: "#151515", strokeWidth: 2 }} />
+                      <Line type="monotone" dataKey="valor" name={selectedEvolutionCategory} stroke="#2563EB" strokeWidth={3} dot={{ r: 4, fill: "#2563EB", stroke: "#151515", strokeWidth: 2 }} activeDot={{ r: 6, fill: "#2563EB", stroke: "#151515", strokeWidth: 2 }} />
                     </LineChart>
                   </ResponsiveContainer>
                 ) : (

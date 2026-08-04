@@ -32,8 +32,8 @@ const MenuItem = ({ href, icon: Icon, label, isActive }: { href: string, icon: a
         href={href} 
         className={`w-12 h-12 rounded-[16px] transition-all duration-200 flex items-center justify-center
           ${isActive 
-            ? "bg-[#E6EDFF] dark:bg-[#282D3F] text-[#5C67FF] dark:text-[#8D9EFF]" 
-            : "text-neutral-500 dark:text-[#6B7280] hover:bg-neutral-100 dark:hover:bg-[#1E2230] hover:text-black dark:hover:text-white"
+            ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400" 
+            : "text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-black dark:hover:text-white"
           }`}
       >
         <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
@@ -207,7 +207,7 @@ export default function DashboardLayout({
   return (
     <>
       <div className="flex md:hidden h-screen w-full flex-col items-center justify-center bg-white dark:bg-[#0E0E0E] p-6 text-center">
-        <MonitorSmartphone size={64} className="text-[#5C67FF] mb-4" />
+        <MonitorSmartphone size={64} className="text-blue-600 mb-4" />
         <h2 className="text-xl font-bold text-black dark:text-white mb-2">Visualização não suportada</h2>
         <p className="text-neutral-600 dark:text-neutral-400">Para garantir a melhor experiência, o 2Mangos web está disponível apenas para Tablets e Desktops.</p>
       </div>
@@ -217,7 +217,7 @@ export default function DashboardLayout({
         {/* BARRA LATERAL */}
         <aside className="w-20 bg-white dark:bg-[#121212] shadow-[4px_0_24px_rgba(0,0,0,0.03)] dark:shadow-none flex flex-col items-center py-6 transition-colors duration-200 z-50 shrink-0 sticky top-0 h-screen">
           <div className="w-full flex items-center justify-center mb-8">
-            <Link href="/dashboard" className="w-12 h-12 bg-[#5C67FF] rounded-[16px] flex items-center justify-center text-white shadow-lg shadow-[#5C67FF]/20 hover:scale-105 transition-transform">
+            <Link href="/dashboard" className="w-12 h-12 bg-blue-600 rounded-[16px] flex items-center justify-center text-white shadow-lg shadow-blue-500/20 hover:scale-105 transition-transform">
               <Wallet size={24} strokeWidth={2.5} />
             </Link>
           </div>
@@ -254,12 +254,12 @@ export default function DashboardLayout({
                         setGlobalSearch(e.target.value);
                         setIsSearchOpen(true);
                       }}
-                      className="w-full pl-10 pr-10 py-2.5 bg-white dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-800 rounded-xl text-sm font-medium text-black dark:text-white placeholder:text-neutral-500 focus:outline-none focus:border-[#5C67FF] transition-colors shadow-sm"
+                      className="w-full pl-10 pr-10 py-2.5 bg-white dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-800 rounded-xl text-sm font-medium text-black dark:text-white placeholder:text-neutral-500 focus:outline-none focus:border-blue-600 transition-colors shadow-sm"
                     />
                     
                     {/* Spinner de carregamento */}
                     {isSearching && (
-                      <Loader2 size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#5C67FF] animate-spin" />
+                      <Loader2 size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-blue-600 animate-spin" />
                     )}
 
                     {/* CAIXA SUSPENSA DE RESULTADOS */}
@@ -335,10 +335,10 @@ export default function DashboardLayout({
                     )}
                   </div>
 
-                  <Link href="/receitas?new=true" className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#5C67FF] text-white rounded-xl text-sm font-semibold hover:bg-[#4A54D4] transition-colors shadow-sm whitespace-nowrap">
+                  <Link href="/receitas?new=true" className="flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition-colors shadow-sm whitespace-nowrap">
                     <Plus size={16} /> Receita
                   </Link>
-                  <Link href="/lancamentos?new=true" className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#5C67FF] text-white rounded-xl text-sm font-semibold hover:bg-[#4A54D4] transition-colors shadow-sm whitespace-nowrap">
+                  <Link href="/lancamentos?new=true" className="flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition-colors shadow-sm whitespace-nowrap">
                     <Plus size={16} /> Lançamento
                   </Link>
                 </div>

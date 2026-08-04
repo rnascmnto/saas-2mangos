@@ -350,6 +350,8 @@ export default function LancamentosPage() {
   const formatCurrency = (val: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
   const formatDateBR = (dateStr: string) => dateStr.split('-').reverse().join('/');
 
+  const cardHoverEffect = "transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:hover:bg-[#202020]";
+
   return (
     <div className="w-full max-w-[1600px] mx-auto space-y-8 animate-in fade-in duration-500 pb-10">
       
@@ -363,7 +365,7 @@ export default function LancamentosPage() {
         </div>
 
         <div className="flex flex-col sm:flex-row items-center gap-4">
-          <div className="flex items-center h-12 bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 shadow-sm text-sm font-medium w-full sm:w-auto relative">
+          <div className="flex items-center h-12 bg-white dark:bg-[#1A1A1A] rounded-xl px-4 shadow-sm text-sm font-medium w-full sm:w-auto relative">
             <div className="flex items-center gap-2 mr-4">
               <Calendar size={16} className="text-red-500 dark:text-red-400" />
               <span className="text-xs uppercase tracking-wider text-neutral-500 font-semibold">Período</span>
@@ -374,7 +376,7 @@ export default function LancamentosPage() {
                 {selectedMonth} <ChevronDown size={14} className="text-neutral-500" />
               </button>
               {isMonthOpen && (
-                <div className="absolute top-full left-0 mt-2 w-48 max-h-64 overflow-y-auto bg-white dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-xl z-50 py-2">
+                <div className="absolute top-full left-0 mt-2 w-48 max-h-64 overflow-y-auto bg-white dark:bg-[#1A1A1A] rounded-xl shadow-xl z-50 py-2">
                   {MONTHS.map((month) => (
                     <button key={month} onClick={() => { setSelectedMonth(month); setIsMonthOpen(false); }} className="w-full text-left px-4 py-2.5 text-sm transition-colors text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800">
                       {month}
@@ -389,7 +391,7 @@ export default function LancamentosPage() {
                 {selectedYear} <ChevronDown size={14} className="text-neutral-500" />
               </button>
               {isYearOpen && (
-                <div className="absolute top-full right-0 mt-2 w-40 bg-white dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-xl z-50 py-2">
+                <div className="absolute top-full right-0 mt-2 w-40 bg-white dark:bg-[#1A1A1A] rounded-xl shadow-xl z-50 py-2">
                   {dynamicYears.map((year) => (
                     <button key={year} onClick={() => { setSelectedYear(year); setIsYearOpen(false); }} className="w-full text-left px-4 py-2.5 text-sm transition-colors text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800">
                       {year}
@@ -400,7 +402,7 @@ export default function LancamentosPage() {
             </div>
           </div>
 
-          <button onClick={openNewModal} className="flex items-center justify-center gap-2 h-12 px-6 bg-[#635BFF] text-white rounded-xl text-sm font-semibold hover:bg-[#5046e5] transition-colors shadow-sm w-full sm:w-auto whitespace-nowrap group">
+          <button onClick={openNewModal} className="flex items-center justify-center gap-2 h-12 px-6 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition-colors shadow-sm w-full sm:w-auto whitespace-nowrap group">
             <Plus size={18} /> Novo Lançamento <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
@@ -410,21 +412,21 @@ export default function LancamentosPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         
         {/* Card 1: Total no Período */}
-        <div className="bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-2xl p-5 flex flex-col justify-between min-h-[140px] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
+        <div className={`bg-white dark:bg-[#1A1A1A] rounded-2xl p-5 flex flex-col justify-between min-h-[140px] shadow-sm ${cardHoverEffect}`}>
           <div className="flex items-start justify-between">
             <div className="space-y-1">
               <span className="text-[10px] font-bold tracking-widest text-neutral-500 uppercase">Total no período</span>
               <h3 className="text-2xl font-bold text-black dark:text-white">{formatCurrency(totalPeriodAmount)}</h3>
             </div>
-            <div className="p-2 bg-neutral-100 dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800">
+            <div className="p-2 bg-neutral-100 dark:bg-neutral-800/50 rounded-lg">
               <DollarSign size={16} className="text-red-500 dark:text-red-400" />
             </div>
           </div>
           <div>
-            <span className={`inline-block px-2.5 py-1 text-[10px] font-semibold rounded-md border transition-colors ${
+            <span className={`inline-block px-2.5 py-1 text-[10px] font-semibold rounded-md transition-colors ${
               isTableFiltered 
-                ? "bg-purple-50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-900/50" 
-                : "bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-500 border-red-100 dark:border-red-900/50"
+                ? "bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400" 
+                : "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-500"
             }`}>
               {isTableFiltered ? "Pesquisa Ativa" : `${selectedMonth}${selectedYear !== "Todos os Anos" ? ` / ${selectedYear}` : ""}`}
             </span>
@@ -432,7 +434,7 @@ export default function LancamentosPage() {
         </div>
 
         {/* Card 2: Acumulado do Ano */}
-        <div className={`bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-2xl p-5 flex flex-col justify-between min-h-[140px] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md ${isTableFiltered ? 'opacity-40 grayscale' : ''}`}>
+        <div className={`bg-white dark:bg-[#1A1A1A] rounded-2xl p-5 flex flex-col justify-between min-h-[140px] shadow-sm ${cardHoverEffect} ${isTableFiltered ? 'opacity-40 grayscale' : ''}`}>
           <div className="flex items-start justify-between">
             <div className="space-y-1">
               <span className="text-[10px] font-bold tracking-widest text-neutral-500 uppercase">Acumulado do ano</span>
@@ -440,19 +442,19 @@ export default function LancamentosPage() {
                 {isTableFiltered ? "------" : formatCurrency(totalYearAmount)}
               </h3>
             </div>
-            <div className="p-2 bg-neutral-100 dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800">
+            <div className="p-2 bg-neutral-100 dark:bg-neutral-800/50 rounded-lg">
               <TrendingDown size={16} className="text-neutral-500" />
             </div>
           </div>
           <div>
-            <span className="inline-block px-2.5 py-1 bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 text-[10px] font-semibold rounded-md border border-neutral-200 dark:border-neutral-800">
+            <span className="inline-block px-2.5 py-1 bg-neutral-100 dark:bg-neutral-800/50 text-neutral-600 dark:text-neutral-400 text-[10px] font-semibold rounded-md">
               {isTableFiltered ? "Não aplicável à pesquisa" : `Ano: ${selectedYear}`}
             </span>
           </div>
         </div>
 
         {/* Card 3: Média de Saídas */}
-        <div className="bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-2xl p-5 flex flex-col justify-between min-h-[140px] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
+        <div className={`bg-white dark:bg-[#1A1A1A] rounded-2xl p-5 flex flex-col justify-between min-h-[140px] shadow-sm ${cardHoverEffect}`}>
           <div className="flex items-start justify-between">
             <div className="space-y-1">
               <span className="text-[10px] font-bold tracking-widest text-neutral-500 uppercase">
@@ -460,15 +462,15 @@ export default function LancamentosPage() {
               </span>
               <h3 className="text-2xl font-bold text-black dark:text-white">{formatCurrency(displayAverage)}</h3>
             </div>
-            <div className="p-2 bg-neutral-100 dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800">
+            <div className="p-2 bg-neutral-100 dark:bg-neutral-800/50 rounded-lg">
               <Wallet size={16} className="text-neutral-500" />
             </div>
           </div>
           <div>
-            <span className={`inline-block px-2.5 py-1 text-[10px] font-semibold rounded-md border transition-colors ${
+            <span className={`inline-block px-2.5 py-1 text-[10px] font-semibold rounded-md transition-colors ${
               isTableFiltered 
-                ? "bg-purple-50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-900/50" 
-                : "bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 border-neutral-200 dark:border-neutral-800"
+                ? "bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400" 
+                : "bg-neutral-100 dark:bg-neutral-800/50 text-neutral-600 dark:text-neutral-400"
             }`}>
               {isTableFiltered ? "Custo médio das despesas acima" : "Estimativa mensal"}
             </span>
@@ -476,13 +478,13 @@ export default function LancamentosPage() {
         </div>
 
         {/* Card 4: Análise Avançada */}
-        <div className="bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-2xl p-5 flex flex-col justify-between min-h-[140px] shadow-sm opacity-60 transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
+        <div className={`bg-white dark:bg-[#1A1A1A] rounded-2xl p-5 flex flex-col justify-between min-h-[140px] shadow-sm opacity-60 ${cardHoverEffect}`}>
           <div className="flex items-start justify-between">
             <div className="space-y-1">
               <span className="text-[10px] font-bold tracking-widest text-neutral-500 uppercase">Análise avançada</span>
               <h3 className="text-2xl font-bold text-neutral-400 dark:text-neutral-500">Em breve</h3>
             </div>
-            <div className="p-2 bg-neutral-100 dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800">
+            <div className="p-2 bg-neutral-100 dark:bg-neutral-800/50 rounded-lg">
               <PieChart size={16} className="text-neutral-400 dark:text-neutral-600" />
             </div>
           </div>
@@ -499,13 +501,13 @@ export default function LancamentosPage() {
         <div className="relative" ref={statusRef}>
           <button 
             onClick={() => { setIsStatusOpen(!isStatusOpen); setIsTypeOpen(false); }}
-            className={`flex items-center justify-between w-full sm:w-44 px-4 py-2.5 bg-white dark:bg-[#151515] border rounded-xl text-sm font-medium transition-colors ${statusFilter !== "Todos os Status" ? "border-blue-500 text-blue-600 dark:border-blue-500/50 dark:text-blue-400" : "border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-300"}`}
+            className={`flex items-center justify-between w-full sm:w-44 px-4 py-2.5 bg-white dark:bg-[#1A1A1A] rounded-xl text-sm font-medium transition-colors ${statusFilter !== "Todos os Status" ? "text-blue-600 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-900/20" : "text-neutral-700 dark:text-neutral-300"}`}
           >
             {statusFilter}
             <ChevronDown size={14} className="opacity-50" />
           </button>
           {isStatusOpen && (
-            <div className="absolute top-full left-0 mt-2 w-full bg-white dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-xl z-20 py-1.5 animate-in fade-in zoom-in-95">
+            <div className="absolute top-full left-0 mt-2 w-full bg-white dark:bg-[#1A1A1A] rounded-xl shadow-xl z-20 py-1.5 animate-in fade-in zoom-in-95">
               {STATUS_OPTIONS.map((opt) => (
                 <button key={opt} onClick={() => { setStatusFilter(opt); setIsStatusOpen(false); }} className={`w-full text-left px-4 py-2 text-sm transition-colors ${statusFilter === opt ? "bg-blue-50 dark:bg-blue-600/20 text-blue-600 dark:text-blue-400 font-medium" : "text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800"}`}>
                   {opt}
@@ -518,13 +520,13 @@ export default function LancamentosPage() {
         <div className="relative" ref={typeRef}>
           <button 
             onClick={() => { setIsTypeOpen(!isTypeOpen); setIsStatusOpen(false); }}
-            className={`flex items-center justify-between w-full sm:w-48 px-4 py-2.5 bg-white dark:bg-[#151515] border rounded-xl text-sm font-medium transition-colors ${typeFilter !== "Todos os Tipos" ? "border-blue-500 text-blue-600 dark:border-blue-500/50 dark:text-blue-400" : "border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-300"}`}
+            className={`flex items-center justify-between w-full sm:w-48 px-4 py-2.5 bg-white dark:bg-[#1A1A1A] rounded-xl text-sm font-medium transition-colors ${typeFilter !== "Todos os Tipos" ? "text-blue-600 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-900/20" : "text-neutral-700 dark:text-neutral-300"}`}
           >
             {typeFilter}
             <ChevronDown size={14} className="opacity-50" />
           </button>
           {isTypeOpen && (
-            <div className="absolute top-full left-0 mt-2 w-full bg-white dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-xl z-20 py-1.5 animate-in fade-in zoom-in-95">
+            <div className="absolute top-full left-0 mt-2 w-full bg-white dark:bg-[#1A1A1A] rounded-xl shadow-xl z-20 py-1.5 animate-in fade-in zoom-in-95">
               {TYPE_OPTIONS.map((opt) => (
                 <button key={opt} onClick={() => { setTypeFilter(opt); setIsTypeOpen(false); }} className={`w-full text-left px-4 py-2 text-sm transition-colors ${typeFilter === opt ? "bg-blue-50 dark:bg-blue-600/20 text-blue-600 dark:text-blue-400 font-medium" : "text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800"}`}>
                   {opt}
@@ -541,17 +543,17 @@ export default function LancamentosPage() {
             placeholder="Procurar despesa específica..." 
             value={tableSearch}
             onChange={(e) => setTableSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-xl text-sm font-medium text-black dark:text-white placeholder:text-neutral-500 focus:outline-none focus:border-blue-500 transition-colors"
+            className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-[#1A1A1A] rounded-xl text-sm font-medium text-black dark:text-white placeholder:text-neutral-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors"
           />
         </div>
       </div>
 
       {/* TABELA E RODAPÉ (COM SCROLL INTERNO DISCRETO) */}
       <div className="space-y-4">
-        <div className="bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-2xl shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-[#1A1A1A] rounded-2xl shadow-sm overflow-hidden">
           <div className="overflow-x-auto overflow-y-auto max-h-[520px] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-neutral-200 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-800 [&::-webkit-scrollbar-thumb]:rounded-full [scrollbar-width:thin] [scrollbar-color:#d4d4d4_transparent] dark:[scrollbar-color:#262626_transparent]">
             <table className="w-full text-left text-sm whitespace-nowrap">
-              <thead className="bg-neutral-50 dark:bg-[#1A1A1A] border-b border-neutral-200 dark:border-neutral-800 sticky top-0 z-10">
+              <thead className="bg-neutral-50 dark:bg-[#222222] sticky top-0 z-10">
                 <tr>
                   <th className="px-6 py-4 font-semibold text-[11px] uppercase tracking-wider text-neutral-500">Data do Vencimento</th>
                   <th className="px-6 py-4 font-semibold text-[11px] uppercase tracking-wider text-neutral-500">Categoria</th>
@@ -581,11 +583,11 @@ export default function LancamentosPage() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="flex items-center gap-2 px-2.5 py-1.5 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg">
+                          <div className="flex items-center gap-2 px-2.5 py-1.5 bg-neutral-100 dark:bg-[#222222] rounded-lg">
                             <span className="text-sm">{tx.categories?.icon}</span>
                             <span className="font-medium text-black dark:text-white text-xs">{tx.categories?.name}</span>
                           </div>
-                          <span className="px-2 py-1 bg-neutral-100 dark:bg-neutral-900 text-neutral-500 dark:text-neutral-400 text-[10px] font-semibold rounded border border-neutral-200 dark:border-neutral-800">
+                          <span className="px-2 py-1 bg-neutral-100 dark:bg-neutral-800/50 text-neutral-500 dark:text-neutral-400 text-[10px] font-semibold rounded">
                             {tx.categories?.expense_type === "recorrente" ? "Recorrente" : "Variável"}
                           </span>
                         </div>
@@ -601,10 +603,10 @@ export default function LancamentosPage() {
                         <div className="w-[85px]">
                           <button 
                             onClick={() => toggleStatus(tx)}
-                            className={`inline-flex items-center justify-center px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider rounded-md border transition-all ${
+                            className={`inline-flex items-center justify-center px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider rounded-md transition-all ${
                               tx.status === "pago" 
-                                ? "bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-500 border-green-200 dark:border-green-900/50 hover:bg-green-100 dark:hover:bg-green-900/50" 
-                                : "bg-neutral-100 dark:bg-neutral-800/50 text-neutral-600 dark:text-neutral-400 border-neutral-200 dark:border-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-800"
+                                ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-500 hover:bg-green-100 dark:hover:bg-green-900/40" 
+                                : "bg-neutral-100 dark:bg-neutral-800/50 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700"
                             }`}
                           >
                             {tx.status}
@@ -614,17 +616,17 @@ export default function LancamentosPage() {
                       <td className="px-6 py-4 text-right relative">
                         <button 
                           onClick={() => setActiveActionMenu(activeActionMenu === tx.id ? null : tx.id)}
-                          className="p-1.5 text-neutral-400 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-900 rounded-lg transition-colors"
+                          className="p-1.5 text-neutral-400 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-[#222222] rounded-lg transition-colors"
                         >
                           <MoreVertical size={18} />
                         </button>
 
                         {activeActionMenu === tx.id && (
-                          <div ref={actionMenuRef} className="absolute right-6 top-1/2 -translate-y-1/2 w-32 bg-white dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-700 rounded-xl shadow-xl z-50 py-1.5 animate-in fade-in zoom-in-95">
-                            <button onClick={() => openEditModal(tx)} className="w-full flex items-center gap-2.5 px-3.5 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors">
+                          <div ref={actionMenuRef} className="absolute right-6 top-1/2 -translate-y-1/2 w-32 bg-white dark:bg-[#1A1A1A] rounded-xl shadow-xl z-50 py-1.5 animate-in fade-in zoom-in-95">
+                            <button onClick={() => openEditModal(tx)} className="w-full flex items-center gap-2.5 px-3.5 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-[#222222] transition-colors">
                               <Edit3 size={15} className="text-neutral-400" /> Editar
                             </button>
-                            <button onClick={() => handleDelete(tx)} className="w-full flex items-center gap-2.5 px-3.5 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors">
+                            <button onClick={() => handleDelete(tx)} className="w-full flex items-center gap-2.5 px-3.5 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
                               <Trash2 size={15} className="text-red-500" /> Excluir
                             </button>
                           </div>
@@ -639,7 +641,7 @@ export default function LancamentosPage() {
         </div>
 
         {/* Rodapé de Status */}
-        <div className="flex items-center justify-between px-4 py-3 bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-xl text-xs font-medium text-neutral-500">
+        <div className="flex items-center justify-between px-4 py-3 bg-white dark:bg-[#1A1A1A] rounded-xl text-xs font-medium text-neutral-500">
           <div className="flex items-center gap-2">
             <ListFilter size={14} className="text-blue-500" />
             <span>Extrato ativo: <strong className="text-black dark:text-white">{displayTransactions.length}</strong> itens processados</span>
@@ -651,25 +653,25 @@ export default function LancamentosPage() {
       {/* MODAL NOVA/EDITAR DESPESA */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-3xl w-full max-w-lg shadow-2xl flex flex-col">
-            <div className="flex items-center justify-between p-6 border-b border-neutral-100 dark:border-neutral-800">
+          <div className="bg-white dark:bg-[#1A1A1A] rounded-3xl w-full max-w-lg shadow-2xl flex flex-col">
+            <div className="flex items-center justify-between p-6">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-500 rounded-xl border border-red-100 dark:border-red-900/50 shadow-sm">
+                <div className="p-2.5 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-500 rounded-xl">
                   <TrendingDown size={20} strokeWidth={2.5} />
                 </div>
                 <h2 className="text-xl font-bold text-black dark:text-white tracking-tight">
                   {editingTransactionId ? "Editar Despesa" : "Nova Despesa"}
                 </h2>
               </div>
-              <button onClick={() => setIsModalOpen(false)} className="p-2 text-neutral-400 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-900 rounded-full transition-colors">
+              <button onClick={() => setIsModalOpen(false)} className="p-2 text-neutral-400 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-[#222222] rounded-full transition-colors">
                 <X size={20} />
               </button>
             </div>
 
-            <form onSubmit={handleSaveTransaction} className="p-6 space-y-6">
+            <form onSubmit={handleSaveTransaction} className="p-6 pt-0 space-y-6">
               <div className="relative" ref={categoryDropdownRef}>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-500 mb-2">Categoria</label>
-                <button type="button" onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)} className="w-full flex items-center justify-between px-4 py-3.5 bg-neutral-50 dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-800 rounded-xl text-sm text-left transition-colors hover:border-neutral-300 dark:hover:border-neutral-700 focus:outline-none focus:ring-2 focus:ring-red-500/20">
+                <button type="button" onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)} className="w-full flex items-center justify-between px-4 py-3.5 bg-neutral-50 dark:bg-[#222222] rounded-xl text-sm text-left transition-colors focus:outline-none focus:ring-2 focus:ring-red-500/20">
                   {selectedCategory ? (
                     <div className="flex items-center gap-2">
                       <span className="text-xl">{selectedCategory.icon}</span>
@@ -680,11 +682,11 @@ export default function LancamentosPage() {
                 </button>
 
                 {isCategoryDropdownOpen && (
-                  <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2">
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#1A1A1A] rounded-xl shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2">
                     <div className="p-2 border-b border-neutral-100 dark:border-neutral-800">
                       <div className="relative">
                         <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
-                        <input type="text" placeholder="Buscar categoria..." value={searchCategory} onChange={(e) => setSearchCategory(e.target.value)} className="w-full pl-9 pr-3 py-2 bg-neutral-50 dark:bg-[#151515] border border-transparent rounded-lg text-sm text-black dark:text-white focus:outline-none focus:border-neutral-200 dark:focus:border-neutral-700"/>
+                        <input type="text" placeholder="Buscar categoria..." value={searchCategory} onChange={(e) => setSearchCategory(e.target.value)} className="w-full pl-9 pr-3 py-2 bg-neutral-50 dark:bg-[#222222] rounded-lg text-sm text-black dark:text-white focus:outline-none"/>
                       </div>
                     </div>
                     <div className="max-h-56 overflow-y-auto p-1">
@@ -704,7 +706,7 @@ export default function LancamentosPage() {
                               setDate(`${y}-${m}-${d}`);
                             }
                           }} 
-                          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${selectedCategory?.id === cat.id ? "bg-red-50 dark:bg-red-950/20 text-red-700 dark:text-red-400 font-medium" : "text-black dark:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800"}`}
+                          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${selectedCategory?.id === cat.id ? "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 font-medium" : "text-black dark:text-white hover:bg-neutral-100 dark:hover:bg-[#222222]"}`}
                         >
                           <span className="text-lg">{cat.icon}</span>{cat.name}
                         </button>
@@ -730,7 +732,7 @@ export default function LancamentosPage() {
                         if (e.target.value.length <= 10) setAmount(e.target.value); 
                       }} 
                       required 
-                      className="w-full pl-11 pr-4 py-3.5 bg-neutral-50 dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-800 rounded-xl text-base font-semibold text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-shadow"
+                      className="w-full pl-11 pr-4 py-3.5 bg-neutral-50 dark:bg-[#222222] rounded-xl text-base font-semibold text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-shadow"
                     />
                   </div>
                 </div>
@@ -745,14 +747,14 @@ export default function LancamentosPage() {
                       onChange={(e) => setDate(e.target.value)} 
                       required 
                       disabled={!!selectedCategory?.due_date}
-                      className={`w-full px-4 py-3.5 bg-neutral-50 dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-800 rounded-xl text-sm font-medium text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-shadow [&::-webkit-calendar-picker-indicator]:dark:invert [&::-webkit-calendar-picker-indicator]:opacity-50 hover:[&::-webkit-calendar-picker-indicator]:opacity-100 ${selectedCategory?.due_date ? 'opacity-60 cursor-not-allowed' : ''}`}
+                      className={`w-full px-4 py-3.5 bg-neutral-50 dark:bg-[#222222] rounded-xl text-sm font-medium text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-shadow [&::-webkit-calendar-picker-indicator]:dark:invert [&::-webkit-calendar-picker-indicator]:opacity-50 hover:[&::-webkit-calendar-picker-indicator]:opacity-100 ${selectedCategory?.due_date ? 'opacity-60 cursor-not-allowed' : ''}`}
                     />
                   </div>
                 </div>
               </div>
 
               <div className="pt-2 flex items-center gap-3">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-3 px-4 bg-white dark:bg-transparent border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 rounded-xl font-semibold text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors">
+                <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-3 px-4 bg-transparent text-neutral-700 dark:text-neutral-300 rounded-xl font-semibold text-sm hover:bg-neutral-100 dark:hover:bg-[#222222] transition-colors">
                   Cancelar
                 </button>
                 <button type="submit" disabled={isSaving || !selectedCategory || !amount || !date} className="flex-1 py-3 px-4 bg-red-600 text-white rounded-xl font-semibold text-sm hover:bg-red-700 transition-colors shadow-sm shadow-red-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex justify-center">
