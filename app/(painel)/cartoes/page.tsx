@@ -448,7 +448,7 @@ export default function CartoesPage() {
           <Loader2 className="animate-spin text-blue-600 dark:text-blue-500" size={32} />
         </div>
       ) : creditCards.length === 0 ? (
-        <div className="text-center py-20 bg-white dark:bg-[#151515] rounded-2xl border border-neutral-200 dark:border-neutral-800">
+        <div className="text-center py-20 bg-white dark:bg-[#151515] rounded-2xl shadow-sm">
           <div className="text-4xl mb-3">💳</div>
           <h3 className="text-lg font-semibold text-black dark:text-white">Nenhum cartão cadastrado</h3>
           <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1 mb-4">
@@ -474,7 +474,7 @@ export default function CartoesPage() {
               <div
                 key={card.id}
                 onClick={() => openCardModal(card)}
-                className={`flex flex-col p-6 bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-2xl shadow-sm ${cardHoverEffect}`}
+                className={`flex flex-col p-6 bg-white dark:bg-[#151515] rounded-2xl shadow-sm ${cardHoverEffect}`}
               >
                 <div className="flex items-start justify-between mb-6">
                   <div className="flex items-center gap-3">

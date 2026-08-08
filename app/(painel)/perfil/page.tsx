@@ -296,7 +296,7 @@ export default function PerfilPage() {
     return name.substring(0, 2).toUpperCase()
   }
 
-  const cardHoverEffect = "transition-all duration-300 hover:-translate-y-1 hover:shadow-md hover:border-neutral-300 dark:hover:border-neutral-700"
+  const cardHoverEffect = "transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:hover:bg-[#202020]"
 
   if (loading) {
     return (
@@ -319,17 +319,17 @@ export default function PerfilPage() {
         </div>
         <button
           onClick={handleSignOut}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-neutral-100 dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 rounded-xl text-sm font-semibold hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors w-full sm:w-auto justify-center shadow-sm"
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-neutral-100 dark:bg-[#1A1A1A] text-neutral-700 dark:text-neutral-300 rounded-xl text-sm font-semibold hover:bg-neutral-200 dark:hover:bg-[#222222] transition-colors w-full sm:w-auto justify-center shadow-sm"
         >
           <LogOut size={16} /> Sair da conta
         </button>
       </div>
 
       {/* CARD PRINCIPAL DE APRESENTAÇÃO */}
-      <div className={`bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6 ${cardHoverEffect}`}>
+      <div className={`bg-white dark:bg-[#1A1A1A] rounded-2xl p-6 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6 ${cardHoverEffect}`}>
         <div className="flex items-center gap-5">
           <div className="relative group">
-            <div className="w-20 h-20 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/50 flex items-center justify-center font-bold text-xl overflow-hidden shadow-sm">
+            <div className="w-20 h-20 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xl overflow-hidden shadow-sm">
               {profile.avatar_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={profile.avatar_url} alt={profile.full_name} className="w-full h-full object-cover" />
@@ -355,14 +355,14 @@ export default function PerfilPage() {
             <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
               @{profile.username || "usuario"}
             </p>
-            <div className="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-400 border border-blue-100 dark:border-blue-900/50">
+            <div className="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400">
               <Sparkles size={12} /> {profile.plan_type}
             </div>
           </div>
         </div>
 
         {/* ESTATÍSTICA RÁPIDA DA CONTA */}
-        <div className="flex items-center justify-center md:justify-end w-full md:w-auto pt-4 md:pt-0 border-t md:border-t-0 border-neutral-100 dark:border-neutral-800">
+        <div className="flex items-center justify-center md:justify-end w-full md:w-auto pt-4 md:pt-0 border-t md:border-t-0 border-neutral-100 dark:border-neutral-800/50">
           <div className="text-center md:text-right">
             <span className="block text-[11px] font-semibold text-neutral-500 mb-0.5 uppercase tracking-wide">Membro desde</span>
             <span className="text-sm font-bold text-black dark:text-white capitalize">{memberSince || "Recente"}</span>
@@ -373,11 +373,11 @@ export default function PerfilPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* COLUNA ESQUERDA: DETALHES + SEGURANÇA (Ocupa 2 espaços) */}
-        <div className={`lg:col-span-2 bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 shadow-sm space-y-8 ${cardHoverEffect}`}>
+        <div className={`lg:col-span-2 bg-white dark:bg-[#1A1A1A] rounded-2xl p-6 shadow-sm space-y-8 ${cardHoverEffect}`}>
           
           {/* SESSÃO 1: DADOS PESSOAIS */}
           <div className="space-y-6">
-            <div className="flex items-center justify-between border-b border-neutral-100 dark:border-neutral-800 pb-4">
+            <div className="flex items-center justify-between border-b border-neutral-100 dark:border-neutral-800/50 pb-4">
               <div>
                 <h3 className="text-lg font-bold text-black dark:text-white">Detalhes da Conta</h3>
                 <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">Atualize seus dados cadastrais</p>
@@ -387,7 +387,7 @@ export default function PerfilPage() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => { setIsEditing(false); setEditForm(profile); }}
-                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-semibold border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-600 dark:text-neutral-400 transition-colors"
+                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-semibold bg-neutral-100 dark:bg-[#222222] hover:bg-neutral-200 dark:hover:bg-[#2A2A2A] text-neutral-600 dark:text-neutral-400 transition-colors"
                   >
                     <X size={16} /> Cancelar
                   </button>
@@ -402,7 +402,7 @@ export default function PerfilPage() {
               ) : (
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300 transition-colors shadow-sm"
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold bg-neutral-100 dark:bg-[#222222] hover:bg-neutral-200 dark:hover:bg-[#2A2A2A] text-neutral-700 dark:text-neutral-300 transition-colors shadow-sm"
                 >
                   <Edit3 size={16} /> Editar Perfil
                 </button>
@@ -419,10 +419,10 @@ export default function PerfilPage() {
                     type="text"
                     value={editForm.full_name}
                     onChange={(e) => setEditForm({ ...editForm, full_name: e.target.value })}
-                    className="w-full px-4 py-3 bg-neutral-50 dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-800 rounded-xl text-sm font-medium text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                    className="w-full px-4 py-3 bg-neutral-50 dark:bg-[#222222] rounded-xl text-sm font-medium text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                   />
                 ) : (
-                  <div className="px-4 py-3 bg-neutral-50/50 dark:bg-neutral-900/30 border border-neutral-100 dark:border-neutral-800/80 rounded-xl">
+                  <div className="px-4 py-3 bg-neutral-50 dark:bg-[#222222] rounded-xl">
                     <p className="text-sm font-semibold text-black dark:text-white">
                       {profile.full_name || "Não informado"}
                     </p>
@@ -439,10 +439,10 @@ export default function PerfilPage() {
                     type="text"
                     value={editForm.username}
                     onChange={(e) => setEditForm({ ...editForm, username: e.target.value })}
-                    className="w-full px-4 py-3 bg-neutral-50 dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-800 rounded-xl text-sm font-medium text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                    className="w-full px-4 py-3 bg-neutral-50 dark:bg-[#222222] rounded-xl text-sm font-medium text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                   />
                 ) : (
-                  <div className="px-4 py-3 bg-neutral-50/50 dark:bg-neutral-900/30 border border-neutral-100 dark:border-neutral-800/80 rounded-xl">
+                  <div className="px-4 py-3 bg-neutral-50 dark:bg-[#222222] rounded-xl">
                     <p className="text-sm font-semibold text-black dark:text-white">
                       @{profile.username || "naoinformado"}
                     </p>
@@ -454,11 +454,11 @@ export default function PerfilPage() {
                 <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 mb-2">
                   Endereço de E-mail
                 </label>
-                <div className="px-4 py-3 bg-neutral-50/50 dark:bg-neutral-900/30 border border-neutral-100 dark:border-neutral-800/80 rounded-xl flex items-center justify-between">
+                <div className="px-4 py-3 bg-neutral-50 dark:bg-[#222222] rounded-xl flex items-center justify-between">
                   <p className="text-sm font-semibold text-black dark:text-white truncate pr-2">
                     {userEmail || "Carregando..."}
                   </p>
-                  <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-md border border-emerald-500/20 shrink-0">
+                  <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-md shrink-0">
                     <ShieldCheck size={12} /> VERIFICADO
                   </span>
                 </div>
@@ -474,10 +474,10 @@ export default function PerfilPage() {
                     value={editForm.phone}
                     onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
                     placeholder="(00) 00000-0000"
-                    className="w-full px-4 py-3 bg-neutral-50 dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-800 rounded-xl text-sm font-medium text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                    className="w-full px-4 py-3 bg-neutral-50 dark:bg-[#222222] rounded-xl text-sm font-medium text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                   />
                 ) : (
-                  <div className="px-4 py-3 bg-neutral-50/50 dark:bg-neutral-900/30 border border-neutral-100 dark:border-neutral-800/80 rounded-xl">
+                  <div className="px-4 py-3 bg-neutral-50 dark:bg-[#222222] rounded-xl">
                     <p className="text-sm font-semibold text-black dark:text-white">
                       {profile.phone || "Não informado"}
                     </p>
@@ -487,7 +487,7 @@ export default function PerfilPage() {
             </div>
           </div>
 
-          <div className="w-full h-px bg-neutral-100 dark:bg-neutral-800"></div>
+          <div className="w-full h-px bg-neutral-100 dark:bg-neutral-800/50"></div>
 
           {/* SESSÃO 2: SEGURANÇA (SUBTÓPICO) */}
           <div className="space-y-6">
@@ -502,8 +502,8 @@ export default function PerfilPage() {
             </div>
 
             <form onSubmit={handleUpdatePassword} className="space-y-4">
-              {pwdError && <p className="text-sm text-red-500 bg-red-50 dark:bg-red-950/30 p-3 rounded-xl border border-red-100 dark:border-red-900/50">{pwdError}</p>}
-              {pwdSuccess && <p className="text-sm text-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 p-3 rounded-xl border border-emerald-100 dark:border-emerald-900/50">{pwdSuccess}</p>}
+              {pwdError && <p className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 p-3 rounded-xl">{pwdError}</p>}
+              {pwdSuccess && <p className="text-sm text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 p-3 rounded-xl">{pwdSuccess}</p>}
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -515,7 +515,7 @@ export default function PerfilPage() {
                     placeholder="Sua senha atual"
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
-                    className="w-full px-4 py-3 bg-neutral-50 dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-800 rounded-xl text-sm font-medium text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                    className="w-full px-4 py-3 bg-neutral-50 dark:bg-[#222222] rounded-xl text-sm font-medium text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                   />
                 </div>
                 <div>
@@ -527,7 +527,7 @@ export default function PerfilPage() {
                     placeholder="Nova senha (min. 6 caracteres)"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full px-4 py-3 bg-neutral-50 dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-800 rounded-xl text-sm font-medium text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                    className="w-full px-4 py-3 bg-neutral-50 dark:bg-[#222222] rounded-xl text-sm font-medium text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                   />
                 </div>
               </div>
@@ -548,9 +548,9 @@ export default function PerfilPage() {
 
         {/* COLUNA DIREITA (Ocupa 1 espaço - DADOS DA CONTA) */}
         <div className="lg:col-span-1 space-y-6">
-          <div className={`bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 shadow-sm space-y-6 ${cardHoverEffect}`}>
-            <div className="flex items-center gap-3 border-b border-neutral-100 dark:border-neutral-800 pb-4">
-              <div className="p-2 bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 rounded-lg">
+          <div className={`bg-white dark:bg-[#1A1A1A] rounded-2xl p-6 shadow-sm space-y-6 ${cardHoverEffect}`}>
+            <div className="flex items-center gap-3 border-b border-neutral-100 dark:border-neutral-800/50 pb-4">
+              <div className="p-2 bg-neutral-100 dark:bg-[#222222] text-neutral-600 dark:text-neutral-400 rounded-lg">
                 <Database size={18} />
               </div>
               <div>
@@ -569,14 +569,14 @@ export default function PerfilPage() {
                 <button 
                   onClick={handleExportData}
                   disabled={exporting}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-neutral-50 dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-300 rounded-xl text-sm font-semibold hover:bg-neutral-100 dark:hover:bg-[#222] transition-colors shadow-sm disabled:opacity-50"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-neutral-100 dark:bg-[#222222] text-neutral-700 dark:text-neutral-300 rounded-xl text-sm font-semibold hover:bg-neutral-200 dark:hover:bg-[#2A2A2A] transition-colors shadow-sm disabled:opacity-50"
                 >
                   {exporting ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
                   Baixar Planilha CSV
                 </button>
               </div>
 
-              <div className="w-full h-px bg-neutral-100 dark:bg-neutral-800 my-2"></div>
+              <div className="w-full h-px bg-neutral-100 dark:bg-neutral-800/50 my-2"></div>
 
               {/* Excluir Conta */}
               <div>
@@ -586,7 +586,7 @@ export default function PerfilPage() {
                 </p>
                 <button 
                   onClick={handleDeleteAccount}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-500 rounded-xl text-sm font-semibold hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-500 rounded-xl text-sm font-semibold hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
                 >
                   <Trash2 size={16} /> Excluir permanentemente
                 </button>

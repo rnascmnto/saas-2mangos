@@ -69,9 +69,11 @@ export default function DashboardPage() {
   // Filtros dos Gráficos
   const [chartView, setChartView] = useState<"tudo" | "receitas" | "despesas">("tudo");
   const [selectedEvolutionCategory, setSelectedEvolutionCategory] = useState<string>("");
+  const [isEvolutionDropdownOpen, setIsEvolutionDropdownOpen] = useState(false);
   
   const monthRef = useRef<HTMLDivElement>(null);
   const yearRef = useRef<HTMLDivElement>(null);
+  const evolutionDropdownRef = useRef<HTMLDivElement>(null);
 
   // Estados dos Dados
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -84,6 +86,7 @@ export default function DashboardPage() {
     function handleClickOutside(event: MouseEvent) {
       if (monthRef.current && !monthRef.current.contains(event.target as Node)) setIsMonthOpen(false);
       if (yearRef.current && !yearRef.current.contains(event.target as Node)) setIsYearOpen(false);
+      if (evolutionDropdownRef.current && !evolutionDropdownRef.current.contains(event.target as Node)) setIsEvolutionDropdownOpen(false);
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -128,8 +131,6 @@ export default function DashboardPage() {
 
     if (transData) {
       setTransactions(transData as unknown as Transaction[]);
-      const uniqueCats = Array.from(new Set((transData as unknown as Transaction[]).map(tx => tx.categories?.name).filter(Boolean)));
-      if (uniqueCats.length > 0) setSelectedEvolutionCategory(uniqueCats[0]);
     }
     if (incData) setIncomes(incData as Income[]);
     
@@ -282,7 +283,19 @@ export default function DashboardPage() {
   .sort((a, b) => (b.amount / b.goal) - (a.amount / a.goal));
 
   // --- LÓGICA GRÁFICO 5: EVOLUÇÃO DE CONTAS ---
-  const allCategoryNames = Array.from(new Set(transactions.map(tx => tx.categories?.name).filter(Boolean)));
+  // CORREÇÃO: Pegar as categorias APENAS dos lançamentos do mês selecionado
+  const allCategoryNames = Array.from(new Set(filteredTransactions.map(tx => tx.categories?.name).filter(Boolean)));
+
+  // EFEITO: Ajusta a categoria selecionada caso o usuário mude de mês e a categoria anterior suma
+  useEffect(() => {
+    if (allCategoryNames.length > 0 && (!selectedEvolutionCategory || !allCategoryNames.includes(selectedEvolutionCategory))) {
+      setSelectedEvolutionCategory(allCategoryNames[0]);
+    } else if (allCategoryNames.length === 0 && selectedEvolutionCategory !== "") {
+      setSelectedEvolutionCategory("");
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedMonth, selectedYear, filteredTransactions.length]);
+
   const getEvolutionData = () => {
     let endMonth = new Date().getMonth(); 
     let endYear = new Date().getFullYear();
@@ -357,7 +370,7 @@ export default function DashboardPage() {
                 {selectedMonth} <ChevronDown size={14} className="text-neutral-500" />
               </button>
               {isMonthOpen && (
-                <div className="absolute top-full left-0 mt-2 w-48 max-h-64 overflow-y-auto bg-white dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-xl z-50 py-2 animate-in fade-in slide-in-from-top-2">
+                <div className="absolute top-full left-0 mt-2 w-48 max-h-64 overflow-y-auto bg-white dark:bg-[#1A1A1A] rounded-xl shadow-xl z-50 py-2 animate-in fade-in slide-in-from-top-2">
                   {MONTHS.map((month) => (
                     <button key={month} onClick={() => { setSelectedMonth(month); setIsMonthOpen(false); }} className="w-full text-left px-4 py-2.5 text-sm transition-colors text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800">
                       {month}
@@ -374,7 +387,7 @@ export default function DashboardPage() {
                 {selectedYear} <ChevronDown size={14} className="text-neutral-500" />
               </button>
               {isYearOpen && (
-                <div className="absolute top-full right-0 mt-2 w-40 bg-white dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-xl z-50 py-2 animate-in fade-in slide-in-from-top-2">
+                <div className="absolute top-full right-0 mt-2 w-40 bg-white dark:bg-[#1A1A1A] rounded-xl shadow-xl z-50 py-2 animate-in fade-in slide-in-from-top-2">
                   {dynamicYears.map((year) => (
                     <button key={year} onClick={() => { setSelectedYear(year); setIsYearOpen(false); }} className="w-full text-left px-4 py-2.5 text-sm transition-colors text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800">
                       {year}
@@ -669,18 +682,38 @@ export default function DashboardPage() {
                   <p className="text-sm text-neutral-500 dark:text-neutral-400">Comportamento individual (12 meses)</p>
                 </div>
                 
+                {/* DROPDOWN CUSTOMIZADO CORRIGIDO (SEM ESPAÇO SOBRANDO E COM FILTRO CORRETO) */}
                 {allCategoryNames.length > 0 && (
-                  <div className="relative">
-                    <select 
-                      value={selectedEvolutionCategory}
-                      onChange={(e) => setSelectedEvolutionCategory(e.target.value)}
-                      className="appearance-none bg-neutral-100 dark:bg-[#222222] text-black dark:text-white text-xs font-semibold rounded-lg px-4 py-2 pr-8 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors cursor-pointer border-none"
+                  <div className="relative" ref={evolutionDropdownRef}>
+                    <button 
+                      onClick={() => setIsEvolutionDropdownOpen(!isEvolutionDropdownOpen)}
+                      className="flex items-center justify-between gap-3 bg-neutral-100 dark:bg-[#222222] text-black dark:text-white text-xs font-semibold rounded-lg px-4 py-2 min-w-[140px] max-w-[200px] transition-colors focus:outline-none focus:ring-1 focus:ring-blue-500"
                     >
-                      {allCategoryNames.map(name => (
-                        <option key={name} value={name}>{name}</option>
-                      ))}
-                    </select>
-                    <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
+                      <span className="truncate">{selectedEvolutionCategory || "Selecione..."}</span>
+                      <ChevronDown size={14} className={`shrink-0 text-neutral-400 transition-transform ${isEvolutionDropdownOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                    
+                    {isEvolutionDropdownOpen && (
+                      <div className="absolute top-full right-0 mt-2 min-w-full w-max max-w-[240px] max-h-64 overflow-y-auto bg-white dark:bg-[#222222] rounded-xl shadow-xl z-50 py-2 animate-in fade-in slide-in-from-top-2 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-neutral-200 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-700 [&::-webkit-scrollbar-thumb]:rounded-full">
+                        {allCategoryNames.map(name => (
+                          <button
+                            key={name}
+                            title={name}
+                            onClick={() => {
+                              setSelectedEvolutionCategory(name);
+                              setIsEvolutionDropdownOpen(false);
+                            }}
+                            className={`w-full block text-left px-4 py-2.5 text-xs font-medium transition-colors truncate ${
+                              selectedEvolutionCategory === name
+                                ? "bg-blue-50/50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+                                : "text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-[#2A2A2A]"
+                            }`}
+                          >
+                            {name}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

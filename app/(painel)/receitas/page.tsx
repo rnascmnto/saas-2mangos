@@ -208,6 +208,8 @@ export default function ReceitasPage() {
   const formatCurrency = (val: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
   const formatDateBR = (dateStr: string) => dateStr.split('-').reverse().join('/');
 
+  const cardHoverEffect = "transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:hover:bg-[#202020]";
+
   return (
     <div className="w-full max-w-[1600px] mx-auto space-y-8 animate-in fade-in duration-500 pb-10">
       
@@ -221,7 +223,7 @@ export default function ReceitasPage() {
         </div>
 
         <div className="flex flex-col sm:flex-row items-center gap-4">
-          <div className="flex items-center h-12 bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 shadow-sm text-sm font-medium w-full sm:w-auto relative">
+          <div className="flex items-center h-12 bg-white dark:bg-[#1A1A1A] rounded-xl px-4 shadow-sm text-sm font-medium w-full sm:w-auto relative">
             <div className="flex items-center gap-2 mr-4">
               <Calendar size={16} className="text-emerald-500 dark:text-emerald-400" />
               <span className="text-xs uppercase tracking-wider text-neutral-500 font-semibold">Período</span>
@@ -234,7 +236,7 @@ export default function ReceitasPage() {
                 {selectedMonth} <ChevronDown size={14} className="text-neutral-500" />
               </button>
               {isMonthOpen && (
-                <div className="absolute top-full left-0 mt-2 w-48 max-h-64 overflow-y-auto bg-white dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-xl z-50 py-2 animate-in fade-in slide-in-from-top-2">
+                <div className="absolute top-full left-0 mt-2 w-48 max-h-64 overflow-y-auto bg-white dark:bg-[#1A1A1A] rounded-xl shadow-xl z-50 py-2 animate-in fade-in slide-in-from-top-2">
                   {MONTHS.map((month) => (
                     <button key={month} onClick={() => { setSelectedMonth(month); setIsMonthOpen(false); }} className="w-full text-left px-4 py-2.5 text-sm transition-colors text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800">
                       {month}
@@ -252,7 +254,7 @@ export default function ReceitasPage() {
                 {selectedYear} <ChevronDown size={14} className="text-neutral-500" />
               </button>
               {isYearOpen && (
-                <div className="absolute top-full right-0 mt-2 w-40 bg-white dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-xl z-50 py-2 animate-in fade-in slide-in-from-top-2">
+                <div className="absolute top-full right-0 mt-2 w-40 bg-white dark:bg-[#1A1A1A] rounded-xl shadow-xl z-50 py-2 animate-in fade-in slide-in-from-top-2">
                   {dynamicYears.map((year) => (
                     <button key={year} onClick={() => { setSelectedYear(year); setIsYearOpen(false); }} className="w-full text-left px-4 py-2.5 text-sm transition-colors text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800">
                       {year}
@@ -273,21 +275,21 @@ export default function ReceitasPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         
         {/* Card 1: Total Recebido */}
-        <div className="bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-2xl p-5 flex flex-col justify-between min-h-[140px] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
+        <div className={`bg-white dark:bg-[#1A1A1A] rounded-2xl p-5 flex flex-col justify-between min-h-[140px] shadow-sm ${cardHoverEffect}`}>
           <div className="flex items-start justify-between">
             <div className="space-y-1">
               <span className="text-[10px] font-bold tracking-widest text-neutral-500 uppercase">Total Recebido</span>
               <h3 className="text-2xl font-bold text-black dark:text-white">{formatCurrency(totalPeriodAmount)}</h3>
             </div>
-            <div className="p-2 bg-neutral-100 dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800">
+            <div className="p-2 bg-neutral-100 dark:bg-neutral-800/50 rounded-lg">
               <DollarSign size={16} className="text-emerald-500 dark:text-emerald-400" />
             </div>
           </div>
           <div>
-            <span className={`inline-block px-2.5 py-1 text-[10px] font-semibold rounded-md border transition-colors ${
+            <span className={`inline-block px-2.5 py-1 text-[10px] font-semibold rounded-md transition-colors ${
               isTableFiltered 
-                ? "bg-purple-50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-900/50" 
-                : "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-500 border-emerald-100 dark:border-emerald-900/50"
+                ? "bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400" 
+                : "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-500"
             }`}>
               {isTableFiltered ? "Filtrado" : `${selectedMonth}${selectedYear !== "Todos os Anos" ? ` / ${selectedYear}` : ""}`}
             </span>
@@ -295,54 +297,54 @@ export default function ReceitasPage() {
         </div>
 
         {/* Card 2: Acumulado do Ano */}
-        <div className="bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-2xl p-5 flex flex-col justify-between min-h-[140px] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
+        <div className={`bg-white dark:bg-[#1A1A1A] rounded-2xl p-5 flex flex-col justify-between min-h-[140px] shadow-sm ${cardHoverEffect}`}>
           <div className="flex items-start justify-between">
             <div className="space-y-1">
               <span className="text-[10px] font-bold tracking-widest text-neutral-500 uppercase">Acumulado do ano</span>
               <h3 className="text-2xl font-bold text-black dark:text-white">{formatCurrency(totalYearAmount)}</h3>
             </div>
-            <div className="p-2 bg-neutral-100 dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800">
+            <div className="p-2 bg-neutral-100 dark:bg-neutral-800/50 rounded-lg">
               <TrendingUp size={16} className="text-neutral-500" />
             </div>
           </div>
           <div>
-            <span className="inline-block px-2.5 py-1 bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 text-[10px] font-semibold rounded-md border border-neutral-200 dark:border-neutral-800">
+            <span className="inline-block px-2.5 py-1 bg-neutral-100 dark:bg-neutral-800/50 text-neutral-600 dark:text-neutral-400 text-[10px] font-semibold rounded-md">
               Ano: {selectedYear}
             </span>
           </div>
         </div>
 
         {/* Card 3: Média de Entradas */}
-        <div className="bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-2xl p-5 flex flex-col justify-between min-h-[140px] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
+        <div className={`bg-white dark:bg-[#1A1A1A] rounded-2xl p-5 flex flex-col justify-between min-h-[140px] shadow-sm ${cardHoverEffect}`}>
           <div className="flex items-start justify-between">
             <div className="space-y-1">
               <span className="text-[10px] font-bold tracking-widest text-neutral-500 uppercase">Média de entradas</span>
               <h3 className="text-2xl font-bold text-black dark:text-white">{formatCurrency(averageMonthlyAmount)}</h3>
             </div>
-            <div className="p-2 bg-neutral-100 dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800">
+            <div className="p-2 bg-neutral-100 dark:bg-neutral-800/50 rounded-lg">
               <Target size={16} className="text-neutral-500" />
             </div>
           </div>
           <div>
-            <span className="inline-block px-2.5 py-1 bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 text-[10px] font-semibold rounded-md border border-neutral-200 dark:border-neutral-800">
+            <span className="inline-block px-2.5 py-1 bg-neutral-100 dark:bg-neutral-800/50 text-neutral-600 dark:text-neutral-400 text-[10px] font-semibold rounded-md">
               Estimativa mensal
             </span>
           </div>
         </div>
 
         {/* Card 4: Análise Avançada (Em breve) */}
-        <div className="bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-2xl p-5 flex flex-col justify-between min-h-[140px] shadow-sm opacity-60 transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
+        <div className={`bg-white dark:bg-[#1A1A1A] rounded-2xl p-5 flex flex-col justify-between min-h-[140px] shadow-sm opacity-60 ${cardHoverEffect}`}>
           <div className="flex items-start justify-between">
             <div className="space-y-1">
               <span className="text-[10px] font-bold tracking-widest text-neutral-500 uppercase">Análise avançada</span>
               <h3 className="text-2xl font-bold text-neutral-400 dark:text-neutral-500">Em breve</h3>
             </div>
-            <div className="p-2 bg-neutral-100 dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800">
+            <div className="p-2 bg-neutral-100 dark:bg-neutral-800/50 rounded-lg">
               <PieChart size={16} className="text-neutral-400 dark:text-neutral-600" />
             </div>
           </div>
           <div>
-            <span className="inline-block px-2.5 py-1 bg-transparent text-neutral-400 dark:text-neutral-600 text-[10px] font-semibold rounded-md border border-neutral-200 dark:border-neutral-800">
+            <span className="inline-block px-2.5 py-1 bg-transparent text-neutral-400 dark:text-neutral-600 text-[10px] font-semibold rounded-md">
               Próxima Atualização
             </span>
           </div>
@@ -358,21 +360,21 @@ export default function ReceitasPage() {
             placeholder="Procurar receita específica..." 
             value={tableSearch}
             onChange={(e) => setTableSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-xl text-sm font-medium text-black dark:text-white placeholder:text-neutral-500 focus:outline-none focus:border-emerald-500 transition-colors"
+            className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-[#1A1A1A] rounded-xl text-sm font-medium text-black dark:text-white placeholder:text-neutral-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-colors"
           />
         </div>
       </div>
 
       {/* TABELA DE RECEITAS */}
-      <div className="bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-2xl shadow-sm">
+      <div className="bg-white dark:bg-[#1A1A1A] rounded-2xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto lg:overflow-visible max-lg:pb-32">
           <table className="w-full text-left text-sm whitespace-nowrap">
-            <thead className="bg-neutral-50 dark:bg-neutral-900/50 border-b border-neutral-200 dark:border-neutral-800">
+            <thead className="bg-neutral-50 dark:bg-[#222222]">
               <tr>
-                <th className="px-6 py-4 font-semibold text-[11px] uppercase tracking-wider text-neutral-500 rounded-tl-2xl">Data do Lançamento</th>
+                <th className="px-6 py-4 font-semibold text-[11px] uppercase tracking-wider text-neutral-500">Data do Lançamento</th>
                 <th className="px-6 py-4 font-semibold text-[11px] uppercase tracking-wider text-neutral-500">Descrição</th>
                 <th className="px-6 py-4 font-semibold text-[11px] uppercase tracking-wider text-neutral-500">Valor</th>
-                <th className="px-6 py-4 font-semibold text-[11px] uppercase tracking-wider text-neutral-500 text-right rounded-tr-2xl">Ações</th>
+                <th className="px-6 py-4 font-semibold text-[11px] uppercase tracking-wider text-neutral-500 text-right">Ações</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800/50">
@@ -396,7 +398,7 @@ export default function ReceitasPage() {
                     </td>
                     <td className="px-6 py-4">
                       {/* Descrição em formato de selo (badge) */}
-                      <div className="inline-flex items-center px-2.5 py-1.5 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg">
+                      <div className="inline-flex items-center px-2.5 py-1.5 bg-neutral-100 dark:bg-[#222222] rounded-lg">
                         <span className="font-medium text-black dark:text-white text-xs">{inc.name}</span>
                       </div>
                     </td>
@@ -406,18 +408,18 @@ export default function ReceitasPage() {
                     <td className="px-6 py-4 text-right relative">
                       <button 
                         onClick={() => setActiveActionMenu(activeActionMenu === inc.id ? null : inc.id)}
-                        className="p-1.5 text-neutral-400 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-900 rounded-lg transition-colors"
+                        className="p-1.5 text-neutral-400 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-[#222222] rounded-lg transition-colors"
                       >
                         <MoreVertical size={18} />
                       </button>
 
                       {/* Dropdown de Ações */}
                       {activeActionMenu === inc.id && (
-                        <div ref={actionMenuRef} className="absolute right-12 top-1/2 -translate-y-1/2 w-32 bg-white dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-700 rounded-xl shadow-xl z-50 py-1.5 animate-in fade-in zoom-in-95">
-                          <button onClick={() => openEditModal(inc)} className="w-full flex items-center gap-2.5 px-3.5 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors">
+                        <div ref={actionMenuRef} className="absolute right-12 top-1/2 -translate-y-1/2 w-32 bg-white dark:bg-[#1A1A1A] rounded-xl shadow-xl z-50 py-1.5 animate-in fade-in zoom-in-95">
+                          <button onClick={() => openEditModal(inc)} className="w-full flex items-center gap-2.5 px-3.5 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-[#222222] transition-colors">
                             <Edit3 size={15} className="text-neutral-400" /> Editar
                           </button>
-                          <button onClick={() => handleDelete(inc.id)} className="w-full flex items-center gap-2.5 px-3.5 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors">
+                          <button onClick={() => handleDelete(inc.id)} className="w-full flex items-center gap-2.5 px-3.5 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
                             <Trash2 size={15} className="text-red-500" /> Excluir
                           </button>
                         </div>
@@ -434,22 +436,22 @@ export default function ReceitasPage() {
       {/* MODAL NOVA/EDITAR RECEITA */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-3xl w-full max-w-lg shadow-2xl flex flex-col">
-            <div className="flex items-center justify-between p-6 border-b border-neutral-100 dark:border-neutral-800">
+          <div className="bg-white dark:bg-[#1A1A1A] rounded-3xl w-full max-w-lg shadow-2xl flex flex-col">
+            <div className="flex items-center justify-between p-6">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-500 rounded-xl border border-emerald-100 dark:border-emerald-900/50 shadow-sm">
+                <div className="p-2.5 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-500 rounded-xl">
                   <TrendingUp size={20} strokeWidth={2.5} />
                 </div>
                 <h2 className="text-xl font-bold text-black dark:text-white tracking-tight">
                   {editingIncomeId ? "Editar Receita" : "Nova Receita"}
                 </h2>
               </div>
-              <button onClick={() => setIsModalOpen(false)} className="p-2 text-neutral-400 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-900 rounded-full transition-colors">
+              <button onClick={() => setIsModalOpen(false)} className="p-2 text-neutral-400 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-[#222222] rounded-full transition-colors">
                 <X size={20} />
               </button>
             </div>
 
-            <form onSubmit={handleSaveIncome} className="p-6 space-y-6">
+            <form onSubmit={handleSaveIncome} className="p-6 pt-0 space-y-6">
               
               {/* CAMPO DE NOME COM SUGESTÕES */}
               <div className="relative" ref={nameInputRef}>
@@ -461,12 +463,12 @@ export default function ReceitasPage() {
                   onFocus={() => setShowSuggestions(true)}
                   placeholder="Ex: Salário, Freelance, Rendimentos..." 
                   required 
-                  className="w-full px-4 py-3.5 bg-neutral-50 dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-800 rounded-xl text-sm font-medium text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-shadow"
+                  className="w-full px-4 py-3.5 bg-neutral-50 dark:bg-[#222222] rounded-xl text-sm font-medium text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-shadow"
                 />
                 
                 {/* Popover de Sugestões */}
                 {showSuggestions && recentNames.length > 0 && (
-                  <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-xl z-50 py-2 animate-in fade-in slide-in-from-top-2">
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#1A1A1A] rounded-xl shadow-xl z-50 py-2 animate-in fade-in slide-in-from-top-2">
                     <div className="px-4 py-2 text-[10px] font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1.5">
                       <History size={12} /> Últimas Utilizadas
                     </div>
@@ -478,7 +480,7 @@ export default function ReceitasPage() {
                           setName(rn); 
                           setShowSuggestions(false); 
                         }} 
-                        className="w-full text-left px-4 py-2.5 text-sm transition-colors text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                        className="w-full text-left px-4 py-2.5 text-sm transition-colors text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-[#222222]"
                       >
                         {rn}
                       </button>
@@ -503,7 +505,7 @@ export default function ReceitasPage() {
                         if (e.target.value.length <= 10) setAmount(e.target.value); 
                       }} 
                       required 
-                      className="w-full pl-11 pr-4 py-3.5 bg-neutral-50 dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-800 rounded-xl text-base font-semibold text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-shadow"
+                      className="w-full pl-11 pr-4 py-3.5 bg-neutral-50 dark:bg-[#222222] rounded-xl text-base font-semibold text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-shadow"
                     />
                   </div>
                 </div>
@@ -517,14 +519,14 @@ export default function ReceitasPage() {
                       value={date} 
                       onChange={(e) => setDate(e.target.value)} 
                       required 
-                      className="w-full px-4 py-3.5 bg-neutral-50 dark:bg-[#1A1A1A] border border-neutral-200 dark:border-neutral-800 rounded-xl text-sm font-medium text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-shadow [&::-webkit-calendar-picker-indicator]:dark:invert [&::-webkit-calendar-picker-indicator]:opacity-50 hover:[&::-webkit-calendar-picker-indicator]:opacity-100"
+                      className="w-full px-4 py-3.5 bg-neutral-50 dark:bg-[#222222] rounded-xl text-sm font-medium text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-shadow [&::-webkit-calendar-picker-indicator]:dark:invert [&::-webkit-calendar-picker-indicator]:opacity-50 hover:[&::-webkit-calendar-picker-indicator]:opacity-100"
                     />
                   </div>
                 </div>
               </div>
 
               <div className="pt-2 flex items-center gap-3">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-3 px-4 bg-white dark:bg-transparent border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 rounded-xl font-semibold text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors">
+                <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-3 px-4 bg-transparent text-neutral-700 dark:text-neutral-300 rounded-xl font-semibold text-sm hover:bg-neutral-100 dark:hover:bg-[#222222] transition-colors">
                   Cancelar
                 </button>
                 <button type="submit" disabled={isSaving || !name.trim() || !amount || !date} className="flex-1 py-3 px-4 bg-emerald-600 text-white rounded-xl font-semibold text-sm hover:bg-emerald-700 transition-colors shadow-sm shadow-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex justify-center">

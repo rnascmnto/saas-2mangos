@@ -16,6 +16,7 @@ interface Category {
   due_date?: number | null;
   closing_date?: number | null;
   is_credit_card?: boolean;
+  is_active?: boolean; // Novo campo
 }
 
 interface Transaction {
@@ -121,9 +122,10 @@ export default function LancamentosPage() {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return;
 
+    // Buscando também a coluna is_active
     const { data: catData } = await supabase
       .from("categories")
-      .select("id, name, icon, expense_type, due_date, closing_date, is_credit_card") 
+      .select("id, name, icon, expense_type, due_date, closing_date, is_credit_card, is_active") 
       .eq("user_id", session.user.id)
       .order("name", { ascending: true });
     
@@ -133,7 +135,7 @@ export default function LancamentosPage() {
       .from("transactions")
       .select(`
         id, category_id, amount, date, status,
-        categories (id, name, icon, expense_type, due_date, closing_date, is_credit_card)
+        categories (id, name, icon, expense_type, due_date, closing_date, is_credit_card, is_active)
       `)
       .eq("user_id", session.user.id)
       .order("date", { ascending: true });
@@ -142,7 +144,9 @@ export default function LancamentosPage() {
     setLoading(false);
   }
 
+  // Filtrando para ocultar categorias inativas do dropdown
   const filteredCategories = categories.filter(cat => 
+    cat.is_active !== false && 
     cat.name.toLowerCase().includes(searchCategory.toLowerCase())
   );
 

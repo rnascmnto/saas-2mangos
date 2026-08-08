@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { Plus, Loader2, X, Trash2, CreditCard, Repeat, Activity, Target, Edit3, HelpCircle, Tag } from "lucide-react";
+import { Plus, Loader2, X, Trash2, CreditCard, Repeat, Activity, Target, Edit3, HelpCircle, Tag, EyeOff, Eye } from "lucide-react";
 
 interface Category {
   id: string;
@@ -14,6 +14,7 @@ interface Category {
   credit_limit: number | null;
   closing_date: number | null;
   due_date: number | null;
+  is_active?: boolean; // Novo campo para controle de inativação
 }
 
 // Lista GIGANTE de Emojis
@@ -65,16 +66,29 @@ export default function CategoriasPage() {
       const { data, error } = await supabase
         .from("categories")
         .select("*")
-        .eq("user_id", session.user.id)
-        .order("name", { ascending: true });
+        .eq("user_id", session.user.id);
 
       if (error) throw error;
-      setCategories(data || []);
+      
+      const sortedData = sortCategories(data || []);
+      setCategories(sortedData);
     } catch (error) {
       console.error("Erro ao buscar categorias:", error);
     } finally {
       setLoading(false);
     }
+  }
+
+  // Função para ordenar: Ativas primeiro, depois em ordem alfabética
+  function sortCategories(cats: Category[]) {
+    return [...cats].sort((a, b) => {
+      const aActive = a.is_active !== false;
+      const bActive = b.is_active !== false;
+      
+      if (aActive && !bActive) return -1;
+      if (!aActive && bActive) return 1;
+      return a.name.localeCompare(b.name);
+    });
   }
 
   function openEditModal(category: Category) {
@@ -135,22 +149,20 @@ export default function CategoriasPage() {
 
         if (error) throw error;
         
-        // Atualiza a lista e reordena alfabeticamente
         const updatedCategories = categories.map(cat => cat.id === editingId ? data : cat);
-        setCategories(updatedCategories.sort((a, b) => a.name.localeCompare(b.name)));
+        setCategories(sortCategories(updatedCategories));
       } else {
         // Cria nova categoria
         const { data, error } = await supabase
           .from("categories")
-          .insert([categoryData])
+          .insert([{ ...categoryData, is_active: true }])
           .select()
           .single();
 
         if (error) throw error;
         
-        // Adiciona à lista e reordena alfabeticamente
         const newCategoriesList = [...categories, data];
-        setCategories(newCategoriesList.sort((a, b) => a.name.localeCompare(b.name)));
+        setCategories(sortCategories(newCategoriesList));
       }
       
       closeModal();
@@ -163,14 +175,47 @@ export default function CategoriasPage() {
   }
 
   async function handleDelete(id: string) {
-    if (!confirm("Tem certeza que deseja excluir esta categoria?")) return;
+    if (!confirm("Tem certeza que deseja excluir permanentemente esta categoria?\nSe houver lançamentos vinculados, ocorrerá um erro.")) return;
 
     try {
       const { error } = await supabase.from("categories").delete().eq("id", id);
-      if (error) throw error;
+      if (error) {
+        if (error.code === '23503') { // Código de erro de Foreign Key
+          alert("Não é possível excluir esta categoria pois ela possui lançamentos vinculados. Em vez disso, inative-a clicando no ícone de ocultar.");
+        } else {
+          throw error;
+        }
+        return;
+      }
       setCategories(categories.filter((cat) => cat.id !== id));
     } catch (error) {
       alert("Erro ao deletar categoria.");
+    }
+  }
+
+  async function toggleStatus(category: Category) {
+    const newStatus = category.is_active === false ? true : false;
+    const confirmMessage = newStatus 
+      ? "Deseja reativar esta categoria para que volte a aparecer nos lançamentos?" 
+      : "Deseja inativar esta categoria? Ela não aparecerá mais para novos lançamentos, mas seu histórico será mantido.";
+
+    if (!confirm(confirmMessage)) return;
+
+    try {
+      const { error } = await supabase
+        .from("categories")
+        .update({ is_active: newStatus })
+        .eq("id", category.id);
+
+      if (error) throw error;
+
+      const updatedCategories = categories.map(cat => 
+        cat.id === category.id ? { ...cat, is_active: newStatus } : cat
+      );
+      
+      setCategories(sortCategories(updatedCategories));
+    } catch (error) {
+      alert("Erro ao alterar o status da categoria.");
     }
   }
 
@@ -179,12 +224,14 @@ export default function CategoriasPage() {
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
   }
 
+  const cardHoverEffect = "transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:hover:bg-[#202020]";
+
   return (
     <div className="w-full max-w-[1600px] mx-auto space-y-8 animate-in fade-in duration-500">
       
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          {/* TÍTULO E SUBTÍTULO CORRIGIDOS - Padrão do sistema */}
+          {/* TÍTULO E SUBTÍTULO */}
           <h1 className="text-3xl font-bold text-black dark:text-white tracking-tight">
             Categorias
           </h1>
@@ -195,7 +242,7 @@ export default function CategoriasPage() {
         </div>
         <button
           onClick={() => { closeModal(); setIsModalOpen(true); }}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition-colors shadow-sm shadow-blue-500/20"
+          className="inline-flex items-center justify-center gap-2 px-6 h-12 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition-colors shadow-sm shadow-blue-500/20"
         >
           <Plus size={18} />
           Nova Categoria
@@ -207,7 +254,7 @@ export default function CategoriasPage() {
           <Loader2 className="animate-spin text-blue-500" size={32} />
         </div>
       ) : categories.length === 0 ? (
-        <div className="text-center py-20 bg-white dark:bg-[#151515] rounded-2xl border border-neutral-200 dark:border-neutral-800">
+        <div className="text-center py-20 bg-white dark:bg-[#1A1A1A] rounded-2xl shadow-sm">
           <div className="text-4xl mb-3">🏷️</div>
           <h3 className="text-lg font-semibold text-black dark:text-white">Nenhuma categoria</h3>
           <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1 mb-4">
@@ -222,84 +269,102 @@ export default function CategoriasPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 2xl:gap-6">
-          {categories.map((category) => (
-            <div
-              key={category.id}
-              className="group relative flex flex-col p-5 bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 rounded-xl text-xl">
-                    {category.icon}
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-black dark:text-white leading-tight">
-                      {category.name}
-                    </h3>
-                    <p className="text-xs text-neutral-500 dark:text-neutral-400 flex items-center gap-1 mt-1">
-                      {category.expense_type === "recorrente" ? <Repeat size={12}/> : <Activity size={12}/>}
-                      {category.expense_type === "recorrente" ? "Recorrente" : "Variável"}
-                    </p>
-                  </div>
-                </div>
-                
-                {/* Botões de Ação no Hover */}
-                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button
-                    onClick={() => openEditModal(category)}
-                    className="p-1.5 text-neutral-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/30 rounded-lg transition-colors"
-                    title="Editar categoria"
-                  >
-                    <Edit3 size={16} />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(category.id)}
-                    className="p-1.5 text-neutral-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors"
-                    title="Excluir categoria"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-              </div>
+          {categories.map((category) => {
+            const isActive = category.is_active !== false;
 
-              {/* Renderiza o rodapé do card APENAS se houver meta ou se for cartão */}
-              {(category.budget || category.is_credit_card) && (
-                <div className="flex items-center gap-2 mt-auto pt-4 border-t border-neutral-100 dark:border-neutral-800/80">
-                  {category.budget && (
-                    <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1.5 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-500 border border-emerald-100 dark:border-emerald-900/50 rounded-lg">
-                      <Target size={12} /> Meta: {formatCurrency(category.budget)}
-                    </span>
-                  )}
+            return (
+              <div
+                key={category.id}
+                className={`group relative flex flex-col p-5 bg-white dark:bg-[#1A1A1A] rounded-2xl shadow-sm ${isActive ? cardHoverEffect : 'opacity-60 grayscale hover:opacity-100 transition-opacity'}`}
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-11 h-11 flex items-center justify-center bg-neutral-100 dark:bg-[#222222] rounded-xl text-xl shrink-0">
+                      {category.icon}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className={`font-semibold leading-tight ${isActive ? 'text-black dark:text-white' : 'text-neutral-600 dark:text-neutral-400 line-through'}`}>
+                          {category.name}
+                        </h3>
+                        {!isActive && (
+                          <span className="px-1.5 py-0.5 bg-neutral-200 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-[9px] font-bold uppercase rounded">
+                            Inativa
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-neutral-500 dark:text-neutral-400 flex items-center gap-1 mt-1">
+                        {category.expense_type === "recorrente" ? <Repeat size={12}/> : <Activity size={12}/>}
+                        {category.expense_type === "recorrente" ? "Recorrente" : "Variável"}
+                      </p>
+                    </div>
+                  </div>
                   
-                  {category.is_credit_card && (
-                    <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1.5 bg-purple-50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-400 border border-purple-100 dark:border-purple-900/50 rounded-lg ml-auto">
-                      <CreditCard size={12} /> Cartão
-                    </span>
-                  )}
+                  {/* Botões de Ação no Hover */}
+                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      onClick={() => toggleStatus(category)}
+                      className="p-1.5 text-neutral-400 hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg transition-colors"
+                      title={isActive ? "Inativar categoria" : "Ativar categoria"}
+                    >
+                      {isActive ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                    <button
+                      onClick={() => openEditModal(category)}
+                      className="p-1.5 text-neutral-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                      title="Editar categoria"
+                    >
+                      <Edit3 size={16} />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(category.id)}
+                      className="p-1.5 text-neutral-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                      title="Excluir categoria"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                 </div>
-              )}
-            </div>
-          ))}
+
+                {/* Renderiza o rodapé do card APENAS se houver meta ou se for cartão */}
+                {(category.budget || category.is_credit_card) && (
+                  <div className="flex items-center gap-2 mt-auto pt-4 border-t border-neutral-100 dark:border-neutral-800/50">
+                    {category.budget && (
+                      <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1.5 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-500 rounded-lg">
+                        <Target size={12} /> Meta: {formatCurrency(category.budget)}
+                      </span>
+                    )}
+                    
+                    {category.is_credit_card && (
+                      <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1.5 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400 rounded-lg ml-auto">
+                        <CreditCard size={12} /> Cartão
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
 
       {/* Modal de Criação/Edição */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-[#151515] border border-neutral-200 dark:border-neutral-800 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-            <div className="flex items-center justify-between p-5 border-b border-neutral-100 dark:border-neutral-800 shrink-0">
-              <h2 className="text-lg font-bold text-black dark:text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-[#1A1A1A] rounded-3xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="flex items-center justify-between p-6 shrink-0">
+              <h2 className="text-xl font-bold text-black dark:text-white tracking-tight">
                 {editingId ? "Editar Categoria" : "Nova Categoria"}
               </h2>
               <button 
                 onClick={closeModal}
-                className="p-2 text-neutral-400 hover:text-black dark:hover:text-white transition-colors"
+                className="p-2 text-neutral-400 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-[#222222] rounded-full transition-colors"
               >
                 <X size={20} />
               </button>
             </div>
 
-            <form onSubmit={handleSaveCategory} className="p-5 overflow-y-auto space-y-6">
+            <form onSubmit={handleSaveCategory} className="p-6 pt-0 overflow-y-auto space-y-6">
               
               {/* Ícone e Nome */}
               <div>
@@ -312,7 +377,7 @@ export default function CategoriasPage() {
                   placeholder="Ex: Mercado, Aluguel, Farmácia..."
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
-                  className="w-full px-4 py-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl text-sm text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3.5 bg-neutral-50 dark:bg-[#222222] rounded-xl text-sm font-medium text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-shadow"
                 />
               </div>
 
@@ -320,7 +385,7 @@ export default function CategoriasPage() {
                 <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-500 mb-2">
                   Escolha um Ícone *
                 </label>
-                <div className="grid grid-cols-8 gap-1.5 bg-neutral-50 dark:bg-neutral-900 p-3 rounded-xl border border-neutral-200 dark:border-neutral-800 max-h-48 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-neutral-200 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-700 [&::-webkit-scrollbar-thumb]:rounded-full">
+                <div className="grid grid-cols-8 gap-1.5 bg-neutral-50 dark:bg-[#222222] p-3 rounded-xl max-h-48 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-neutral-200 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-700 [&::-webkit-scrollbar-thumb]:rounded-full">
                   {COMMON_EMOJIS.map((emoji) => (
                     <button
                       key={emoji}
@@ -328,8 +393,8 @@ export default function CategoriasPage() {
                       onClick={() => setSelectedIcon(emoji)}
                       className={`text-xl p-1.5 rounded-lg transition-all flex items-center justify-center
                         ${selectedIcon === emoji 
-                          ? "bg-blue-100 dark:bg-blue-900/40 border-blue-500 border shadow-sm" 
-                          : "hover:bg-neutral-200 dark:hover:bg-neutral-800 border border-transparent"
+                          ? "bg-blue-100 dark:bg-blue-900/40 text-black dark:text-white shadow-sm" 
+                          : "hover:bg-neutral-200 dark:hover:bg-[#2A2A2A]"
                         }
                       `}
                     >
@@ -339,7 +404,7 @@ export default function CategoriasPage() {
                 </div>
               </div>
 
-              {/* Tipo de Despesa com Tooltip Profissionalizado */}
+              {/* Tipo de Despesa com Tooltip */}
               <div>
                 <div className="flex items-center gap-1.5 mb-2">
                   <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-500">
@@ -359,10 +424,10 @@ export default function CategoriasPage() {
                   <button
                     type="button"
                     onClick={() => setExpenseType("variavel")}
-                    className={`flex items-center justify-center gap-2 py-2.5 rounded-xl border text-sm font-medium transition-all ${
+                    className={`flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium transition-all ${
                       expenseType === "variavel"
-                        ? "bg-blue-50 dark:bg-blue-900/20 border-blue-500 text-blue-700 dark:text-blue-400"
-                        : "bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800"
+                        ? "bg-blue-50/50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400"
+                        : "bg-neutral-50 dark:bg-[#222222] text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-[#2A2A2A]"
                     }`}
                   >
                     <Activity size={16} /> Variável
@@ -370,10 +435,10 @@ export default function CategoriasPage() {
                   <button
                     type="button"
                     onClick={() => setExpenseType("recorrente")}
-                    className={`flex items-center justify-center gap-2 py-2.5 rounded-xl border text-sm font-medium transition-all ${
+                    className={`flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium transition-all ${
                       expenseType === "recorrente"
-                        ? "bg-blue-50 dark:bg-blue-900/20 border-blue-500 text-blue-700 dark:text-blue-400"
-                        : "bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800"
+                        ? "bg-blue-50/50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400"
+                        : "bg-neutral-50 dark:bg-[#222222] text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-[#2A2A2A]"
                     }`}
                   >
                     <Repeat size={16} /> Recorrente
@@ -397,7 +462,7 @@ export default function CategoriasPage() {
                     placeholder="0,00"
                     value={budget}
                     onChange={(e) => setBudget(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl text-sm text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full pl-10 pr-4 py-3.5 bg-neutral-50 dark:bg-[#222222] rounded-xl text-sm font-medium text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-shadow"
                   />
                 </div>
                 <p className="text-[11px] text-neutral-400 mt-1.5">
@@ -407,7 +472,7 @@ export default function CategoriasPage() {
 
               {/* Cartão de Crédito e Condicionais */}
               <div className="space-y-3">
-                <div className="flex items-center justify-between p-4 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl">
+                <div className="flex items-center justify-between p-4 bg-neutral-50 dark:bg-[#222222] rounded-xl">
                   <div>
                     <h4 className="text-sm font-semibold text-black dark:text-white flex items-center gap-2">
                       <CreditCard size={16} className="text-purple-500" />
@@ -420,8 +485,8 @@ export default function CategoriasPage() {
                   <button
                     type="button"
                     onClick={() => setIsCreditCard(!isCreditCard)}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-[#151515] ${
-                      isCreditCard ? "bg-purple-500" : "bg-neutral-300 dark:bg-neutral-700"
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 dark:focus:ring-offset-[#1A1A1A] ${
+                      isCreditCard ? "bg-purple-500" : "bg-neutral-300 dark:bg-[#1A1A1A]"
                     }`}
                   >
                     <span
@@ -434,7 +499,7 @@ export default function CategoriasPage() {
 
                 {/* Campos condicionais de cartão */}
                 {isCreditCard && (
-                  <div className="p-4 bg-purple-50 dark:bg-purple-900/10 border border-purple-200 dark:border-purple-900/30 rounded-xl space-y-4 animate-in fade-in slide-in-from-top-2">
+                  <div className="p-4 bg-purple-50 dark:bg-purple-900/10 rounded-xl space-y-4 animate-in fade-in slide-in-from-top-2">
                     <div>
                       <label className="block text-xs font-semibold uppercase tracking-wider text-purple-700 dark:text-purple-400 mb-2">
                         Limite do Cartão
@@ -450,7 +515,7 @@ export default function CategoriasPage() {
                           placeholder="0,00"
                           value={creditLimit}
                           onChange={(e) => setCreditLimit(e.target.value)}
-                          className="w-full pl-10 pr-4 py-3 bg-white dark:bg-neutral-950 border border-purple-200 dark:border-purple-900/50 rounded-xl text-sm text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full pl-10 pr-4 py-3 bg-white dark:bg-[#1A1A1A] rounded-xl text-sm font-medium text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-shadow"
                         />
                       </div>
                     </div>
@@ -467,7 +532,7 @@ export default function CategoriasPage() {
                           placeholder="Ex: 15"
                           value={closingDate}
                           onChange={(e) => setClosingDate(e.target.value)}
-                          className="w-full px-4 py-3 bg-white dark:bg-neutral-950 border border-purple-200 dark:border-purple-900/50 rounded-xl text-sm text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full px-4 py-3 bg-white dark:bg-[#1A1A1A] rounded-xl text-sm font-medium text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-shadow"
                         />
                       </div>
                       <div>
@@ -481,7 +546,7 @@ export default function CategoriasPage() {
                           placeholder="Ex: 20"
                           value={dueDate}
                           onChange={(e) => setDueDate(e.target.value)}
-                          className="w-full px-4 py-3 bg-white dark:bg-neutral-950 border border-purple-200 dark:border-purple-900/50 rounded-xl text-sm text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full px-4 py-3 bg-white dark:bg-[#1A1A1A] rounded-xl text-sm font-medium text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-shadow"
                         />
                       </div>
                     </div>
@@ -493,7 +558,7 @@ export default function CategoriasPage() {
                 <button
                   type="submit"
                   disabled={saving || !newName.trim()}
-                  className="w-full flex items-center justify-center gap-2 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="w-full flex items-center justify-center gap-2 py-3.5 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm shadow-blue-500/20"
                 >
                   {saving ? <Loader2 size={18} className="animate-spin" /> : (editingId ? "Salvar Alterações" : "Salvar Categoria")}
                 </button>
